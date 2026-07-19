@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMO Tycoon 98 — Update 1.5</title>
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:Tahoma, "MS Sans Serif", Geneva, Arial, sans-serif;
+  font-size:11px; color:#000; height:100vh; overflow:hidden; user-select:none;
+}
+#desktop{
+  position:relative; width:100%; height:100%;
+  background:#008080;
+  background-image:linear-gradient(45deg, rgba(255,255,255,0.04) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.04) 25%, transparent 25%);
+  background-size:4px 4px; transition:background-color .2s; overflow:hidden;
+}
+.raised{background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;}
+.sunken{background:#fff; border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #fff; border-bottom:2px solid #fff; box-shadow:inset 1px 1px 0 #808080;}
+.win-btn{background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080; padding:5px 12px; font-family:Tahoma,"MS Sans Serif",sans-serif; font-size:11px; cursor:pointer; color:#000;}
+.win-btn:active:not(:disabled){border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #fff; border-bottom:2px solid #fff; box-shadow:none; padding:6px 11px 4px 13px;}
+.win-btn:disabled{color:#808080; text-shadow:1px 1px 0 #fff; cursor:default;}
+.titlebar{background:linear-gradient(90deg,#000080,#1084d0); color:#fff; font-weight:bold; font-size:12px; padding:3px 4px 3px 6px; display:flex; align-items:center; justify-content:space-between; cursor:default; touch-action:none;}
+.titlebar.err{background:linear-gradient(90deg,#800000,#c00000);}
+.titlebar .ttext{display:flex; align-items:center; gap:6px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
+.winbuttons{display:flex; gap:2px; flex-shrink:0;}
+.winbuttons span{width:16px; height:14px; background:#c0c0c0; border-top:1px solid #fff; border-left:1px solid #fff; border-right:1px solid #000; border-bottom:1px solid #000; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:bold; color:#000; cursor:pointer; line-height:0;}
+.winbuttons span:active{border-top:1px solid #000; border-left:1px solid #000; border-right:1px solid #fff; border-bottom:1px solid #fff;}
+#setupWindow{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:380px; max-width:92vw; background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #000; border-bottom:2px solid #000; box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf, 4px 4px 12px rgba(0,0,0,.4); z-index:5000;}
+.dialog-body{padding:16px;}
+.dialog-row{display:flex; gap:14px; margin-bottom:14px;}
+.dialog-icon{font-size:32px; flex-shrink:0;}
+.dialog-text{font-size:11px; line-height:1.5;}
+.field{margin-bottom:12px;}
+.field label{display:block; font-size:11px; margin-bottom:4px;}
+.field input{width:100%; padding:4px 5px; font-family:Tahoma,sans-serif; font-size:11px; background:#fff; border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #fff; border-bottom:2px solid #fff; outline:none;}
+.dialog-buttons{display:flex; justify-content:flex-end; gap:8px; margin-top:16px;}
+.dialog-buttons .win-btn{min-width:80px;}
+#statusBar{position:absolute; top:0; left:0; right:0; min-height:46px; display:none; gap:8px; padding:6px; flex-wrap:wrap; z-index:10;}
+#statusBar.show{display:flex;}
+.stat-box{flex:1; min-width:100px; padding:4px 10px;}
+.stat-box .lbl{font-size:9px; color:#404040;}
+.stat-box .val{font-family:"Courier New",monospace; font-size:14px; font-weight:bold; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.stat-box.money .val{color:#006400;} .stat-box.players .val{color:#00008b;} .stat-box.income .val{color:#8b008b;}
+#eventBanner{display:none; padding:6px 10px; font-weight:bold; font-size:11px; color:#800000;}
+.app-window{position:absolute; width:340px; max-width:92vw; max-height:80vh; background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #000; border-bottom:2px solid #000; box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf, 3px 3px 10px rgba(0,0,0,.35); display:none; flex-direction:column; z-index:100;}
+.app-window.open{display:flex;}
+.win-content{padding:8px; overflow-y:auto; flex:1; min-height:0;}
+fieldset.win-group{border:2px groove #808080; margin:0 0 10px 0; padding:10px 8px 8px;}
+fieldset.win-group legend{font-size:11px; font-weight:bold; padding:0 4px;}
+fieldset.win-group:last-child{margin-bottom:0;}
+.click-area{padding:10px; margin-bottom:10px; text-align:center;}
+.cap-row{display:flex; justify-content:space-between; font-size:10px; margin-bottom:4px; font-family:"Courier New",monospace;}
+.cap-bar{height:16px; margin-bottom:10px; position:relative; overflow:hidden;}
+.cap-fill{height:100%; width:0%; background:repeating-linear-gradient(90deg,#000080,#000080 6px,#1084d0 6px,#1084d0 12px); transition:width .4s ease;}
+#clickBtn{font-size:12px; font-weight:bold; padding:10px 20px; width:100%;}
+.click-hint{font-size:10px; color:#404040; margin-top:6px;}
+.item{display:flex; align-items:center; gap:8px; padding:6px; margin-bottom:6px;}
+.item:last-child{margin-bottom:0;}
+.item .icon{font-size:20px; width:26px; text-align:center; flex-shrink:0;}
+.item .info{flex:1; min-width:0;}
+.item .name{font-weight:bold; font-size:11px;}
+.item .desc{font-size:10px; color:#404040; margin-top:1px;}
+.item .count{font-size:10px; color:#000080; margin-top:1px; font-family:"Courier New",monospace;}
+.item .buyBtn{min-width:78px; font-family:"Courier New",monospace; font-size:10.5px; font-weight:bold;}
+.campaign-box{padding:12px; text-align:center; margin-bottom:10px;}
+.campaign-box .cname{font-weight:bold; font-size:13px; margin-bottom:4px;}
+.campaign-box .cdesc{font-size:10px; color:#404040; margin-bottom:8px;}
+#campaignBtn{width:100%; font-size:12px; font-weight:bold; padding:10px;}
+.campaign-meta{font-size:10px; color:#000080; margin-top:6px; font-family:"Courier New",monospace;}
+#log{flex:1; background:#000; color:#c0c0c0; font-family:"Courier New",monospace; font-size:11px; line-height:1.6; padding:8px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:2px; border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #fff; border-bottom:2px solid #fff; min-height:220px;}
+#log .entry{opacity:0; animation:fadein .25s forwards;}
+#log .entry .t{color:#666; margin-right:6px;}
+#log .entry.milestone{color:#ffff55;} #log .entry.server{color:#55ff55;} #log .entry.upgrade{color:#bb88ff;} #log .entry.marketing{color:#ff88bb;} #log .entry.office{color:#7fdcff;} #log .entry.bug{color:#ff5555;}
+@keyframes fadein{from{opacity:0;} to{opacity:1;}}
+#startMenu{position:absolute; bottom:34px; left:2px; width:220px; max-height:80vh; overflow-y:auto; background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #000; border-bottom:2px solid #000; box-shadow:3px 3px 10px rgba(0,0,0,.4); display:none; flex-direction:column; padding:4px; z-index:9999;}
+#startMenu.open{display:flex;}
+.menu-title{font-size:10px; font-weight:bold; color:#404040; padding:4px 6px;}
+.wallpaper-item{display:flex; align-items:center; gap:8px; padding:5px 6px; font-size:11px; cursor:pointer;}
+.wallpaper-item:hover{background:#000080; color:#fff;}
+.swatch{width:16px; height:16px; border:1px solid #000; flex-shrink:0;}
+#taskbar{position:absolute; left:0; right:0; bottom:0; height:34px; background:#c0c0c0; border-top:2px solid #fff; display:flex; align-items:center; padding:2px 4px; gap:4px; z-index:9998;}
+#startBtn{font-weight:bold; font-size:11px; display:flex; align-items:center; gap:5px; flex-shrink:0;}
+.taskApp{display:none; align-items:center; gap:5px; font-size:11px; padding:4px 8px; max-width:110px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; flex-shrink:0;}
+.taskApp.show{display:flex;}
+.taskApp.active{border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #fff; border-bottom:2px solid #fff; box-shadow:none;}
+@keyframes blinkTask{0%,100%{background:#c0c0c0;} 50%{background:#ff9090;}}
+.taskApp.urgent{animation:blinkTask 1s infinite;}
+#taskAppsWrap{display:flex; gap:4px; flex:1; overflow-x:auto; min-width:0;}
+#clock{padding:4px 10px; font-size:11px; font-family:"Courier New",monospace; flex-shrink:0;}
+::-webkit-scrollbar{width:14px; height:14px;}
+::-webkit-scrollbar-track{background:#c0c0c0;}
+::-webkit-scrollbar-thumb{background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #404040; border-bottom:2px solid #404040;}
+</style>
+</head>
+<body>
+<div id="desktop">
+
+  <div id="setupWindow">
+    <div class="titlebar"><span class="ttext">🎮 Assistente de Novo Estúdio</span><span class="winbuttons"><span>×</span></span></div>
+    <div class="dialog-body">
+      <div class="dialog-row"><div class="dialog-icon">🏢</div><div class="dialog-text">Bem-vindo ao <b>MMO Tycoon 98</b> — Update 1.5 "World Expansion". Preencha os dados para fundar seu estúdio.</div></div>
+      <div class="field"><label for="companyInput">Nome do estúdio:</label><input id="companyInput" type="text" placeholder="Ex: Nebula Games Ltda." maxlength="26"></div>
+      <div class="field"><label for="gameInput">Nome do MMORPG:</label><input id="gameInput" type="text" placeholder="Ex: Eterna Online" maxlength="26"></div>
+      <div class="dialog-buttons"><button class="win-btn" id="foundBtn">OK</button></div>
+    </div>
+  </div>
+
+  <div id="statusBar">
+    <div class="stat-box sunken money"><div class="lbl">CAIXA</div><div class="val" id="moneyVal">$0</div></div>
+    <div class="stat-box sunken players"><div class="lbl">JOGADORES ONLINE</div><div class="val" id="playersVal">0</div></div>
+    <div class="stat-box sunken income"><div class="lbl">RECEITA</div><div class="val" id="incomeVal">$0/s</div></div>
+    <div id="eventBanner" class="raised"></div>
+  </div>
+
+  <div class="app-window" id="win-prog">
+    <div class="titlebar" data-win="win-prog"><span class="ttext">💻 Programação.exe</span><span class="winbuttons"><span data-close="win-prog">×</span></span></div>
+    <div class="win-content">
+      <div class="click-area raised"><button id="clickBtn" class="win-btn">💻 Programar conteúdo (+$)</button><div class="click-hint">clique para ganhar caixa manualmente</div></div>
+      <fieldset class="win-group"><legend>⌨️ Upgrades de clique</legend><div id="clickUpgradesList"></div></fieldset>
+      <fieldset class="win-group"><legend>🏢 Escritório — automação</legend><div id="officeList"></div></fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-game">
+    <div class="titlebar" data-win="win-game"><span class="ttext">🎮 Jogo.exe</span><span class="winbuttons"><span data-close="win-game">×</span></span></div>
+    <div class="win-content">
+      <div class="click-area raised"><div class="cap-row"><span>Capacidade dos servidores</span><span id="capLabel">0 / 0</span></div><div class="cap-bar sunken"><div class="cap-fill" id="capFill"></div></div></div>
+      <fieldset class="win-group"><legend>✨ Upgrades do jogo — receita por jogador</legend><div id="gameUpgradesList"></div></fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-dc">
+    <div class="titlebar" data-win="win-dc"><span class="ttext">🌐 DataCenter.exe</span><span class="winbuttons"><span data-close="win-dc">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>🖥️ Servidores por país</legend><div id="dcList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-mkt">
+    <div class="titlebar" data-win="win-mkt"><span class="ttext">📣 Marketing.exe</span><span class="winbuttons"><span data-close="win-mkt">×</span></span></div>
+    <div class="win-content">
+      <div class="campaign-box raised"><div class="cname">📣 Campanha de anúncios</div><div class="cdesc">Ação manual. Fica mais cara a cada uso e tem recarga.</div><button id="campaignBtn" class="win-btn">$0</button><div class="campaign-meta" id="campaignMeta">Usos: 0</div></div>
+      <fieldset class="win-group"><legend>📈 Estrutura de marketing</legend><div id="mktSupportList"></div></fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-seq">
+    <div class="titlebar" data-win="win-seq"><span class="ttext">🚀 Sequências.exe</span><span class="winbuttons"><span data-close="win-seq">×</span></span></div>
+    <div class="win-content">
+      <fieldset class="win-group"><legend>📦 Novo lançamento</legend>
+        <div style="font-size:10px; color:#404040; margin-bottom:8px;">Reinicia progresso, mas dá bônus permanente de receita.</div>
+        <div class="field"><label for="seqInput">Nome da sequência:</label><input id="seqInput" type="text" maxlength="26"></div>
+        <div id="seqReq" style="font-size:10px; color:#000080; margin-bottom:8px; font-family:'Courier New',monospace;"></div>
+        <button id="seqBtn" class="win-btn" style="width:100%;">🚀 Lançar sequência</button>
+      </fieldset>
+      <div style="font-size:10px; color:#404040;">Sequências: <span id="seqCount">0</span> · Bônus: <span id="seqBonus">x1.00</span></div>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-analytics">
+    <div class="titlebar" data-win="win-analytics"><span class="ttext">📊 Analytics.exe</span><span class="winbuttons"><span data-close="win-analytics">×</span></span></div>
+    <div class="win-content">
+      <fieldset class="win-group"><legend>📈 Popularidade</legend>
+        <div class="cap-bar sunken"><div class="cap-fill" id="popFill" style="background:linear-gradient(90deg,#c00000,#e0b84c,#3ddc97);"></div></div>
+        <div style="font-family:'Courier New',monospace; font-size:11px;">Popularidade: <span id="popVal">50</span>/100</div>
+      </fieldset>
+      <fieldset class="win-group"><legend>👥 Retenção</legend>
+        <div style="font-family:'Courier New',monospace; font-size:11px; line-height:1.9;">Entrando: <span id="entryRateVal">0</span>/s<br>Saindo: <span id="leaveRateVal">0</span>/s<br>Retenção: <span id="retentionVal">0</span>%</div>
+      </fieldset>
+      <fieldset class="win-group"><legend>💰 Finanças</legend>
+        <div style="font-family:'Courier New',monospace; font-size:11px; line-height:1.9;">Receita bruta: <span id="grossVal">$0</span>/s<br>Despesas: <span id="expVal">$0</span>/s<br>Lucro líquido: <span id="netVal">$0</span>/s<br>Margem: <span id="marginVal">0</span>%</div>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-billing">
+    <div class="titlebar" data-win="win-billing"><span class="ttext">💳 Billing.exe</span><span class="winbuttons"><span data-close="win-billing">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>💳 Modelo de assinatura</legend><div id="billingList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-expansions">
+    <div class="titlebar" data-win="win-expansions"><span class="ttext">📦 Expansões.exe</span><span class="winbuttons"><span data-close="win-expansions">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>📦 Expansões lançáveis</legend><div id="expansionsList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-content">
+    <div class="titlebar" data-win="win-content"><span class="ttext">📜 Conteúdo.exe</span><span class="winbuttons"><span data-close="win-content">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>📜 Conteúdo do jogo</legend><div id="contentList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-classes">
+    <div class="titlebar" data-win="win-classes"><span class="ttext">⚔️ Classes.exe</span><span class="winbuttons"><span data-close="win-classes">×</span></span></div>
+    <div class="win-content">
+      <fieldset class="win-group"><legend>⚔️ Classes</legend><div id="classesList"></div></fieldset>
+      <fieldset class="win-group"><legend>🧬 Raças</legend><div id="racesList"></div></fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-community">
+    <div class="titlebar" data-win="win-community"><span class="ttext">👥 Community.exe</span><span class="winbuttons"><span data-close="win-community">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>👥 Contratações</legend><div id="communityList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-streamers">
+    <div class="titlebar" data-win="win-streamers"><span class="ttext">📺 Streamers.exe</span><span class="winbuttons"><span data-close="win-streamers">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>📺 Campanhas com influenciadores</legend><div id="streamersList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-research">
+    <div class="titlebar" data-win="win-research"><span class="ttext">🔬 Research.exe</span><span class="winbuttons"><span data-close="win-research">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>🔬 Tecnologias</legend><div id="researchList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-reviews">
+    <div class="titlebar" data-win="win-reviews"><span class="ttext">📰 Reviews.exe</span><span class="winbuttons"><span data-close="win-reviews">×</span></span></div>
+    <div class="win-content"><fieldset class="win-group"><legend>📰 Notas da crítica</legend><div id="reviewsList"></div></fieldset></div>
+  </div>
+
+  <div class="app-window" id="win-log" style="width:300px;">
+    <div class="titlebar" data-win="win-log"><span class="ttext">📋 patch-notes.log</span><span class="winbuttons"><span data-close="win-log">×</span></span></div>
+    <div class="win-content" style="display:flex; padding:6px;"><div id="log"></div></div>
+  </div>
+
+  <div class="app-window" id="win-incident" style="top:130px; left:60px; width:280px;">
+    <div class="titlebar err" data-win="win-incident"><span class="ttext" id="incTitleBar">⚠️ Incidente</span><span class="winbuttons"><span data-close="win-incident">×</span></span></div>
+    <div class="win-content" style="text-align:center;">
+      <div id="incIcon" style="font-size:36px; margin-bottom:8px;">🐛</div>
+      <div id="incTitleText" style="font-weight:bold; font-size:12px; margin-bottom:4px;"></div>
+      <div id="incMsg" style="font-size:11px; margin-bottom:10px;"></div>
+      <div class="cap-bar sunken" id="incProgressWrap"><div class="cap-fill" id="incProgressFill" style="background:repeating-linear-gradient(90deg,#800000,#800000 6px,#c00000 6px,#c00000 12px);"></div></div>
+      <button id="incFixBtn" class="win-btn" style="width:100%;"></button>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-news" style="top:120px; left:80px; width:300px;">
+    <div class="titlebar" data-win="win-news"><span class="ttext">📰 Notícia do Mercado</span><span class="winbuttons"><span data-close="win-news">×</span></span></div>
+    <div class="win-content" style="text-align:center;">
+      <div style="font-size:30px; margin-bottom:8px;">📰</div>
+      <div id="newsHeadline" style="font-size:11px; margin-bottom:10px;"></div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="win-btn newsChoice" data-choice="ignore">🙈 Ignorar</button>
+        <button class="win-btn newsChoice" data-choice="promo">📣 Fazer promoção</button>
+        <button class="win-btn newsChoice" data-choice="patch">🔧 Patch emergencial</button>
+        <button class="win-btn newsChoice" data-choice="discount">💸 Reduzir assinatura</button>
+        <button class="win-btn newsChoice" data-choice="invest">💰 Investir em marketing</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="startMenu">
+    <div class="menu-title">🖼️ Papel de parede</div>
+    <div id="wallpaperList"></div>
+    <div class="menu-title" style="margin-top:4px; border-top:1px solid #808080; padding-top:6px;">📂 Janelas</div>
+    <div id="startShortcuts"></div>
+  </div>
+
+  <div id="taskbar">
+    <button class="win-btn" id="startBtn">🏁 Iniciar</button>
+    <div id="taskAppsWrap"><div class="taskApp raised" id="task_win-incident"><span>⚠️</span><span>Incidentes</span></div></div>
+    <div id="clock" class="sunken"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const el = id => document.getElementById(id);
+
+  // ================= DEFINITIONS =================
+  const clickUpgradeDefs = [
+    {key:"c1", icon:"⌨️", name:"Teclado mecânico",    desc:"+1 por clique",  baseCost:30,    rate:1.18, effect:1},
+    {key:"c2", icon:"🖥️", name:"Monitor ultrawide",   desc:"+3 por clique",  baseCost:200,   rate:1.20, effect:3},
+    {key:"c3", icon:"🌈", name:"Setup RGB completo",  desc:"+8 por clique",  baseCost:1200,  rate:1.22, effect:8},
+    {key:"c4", icon:"🤖", name:"IDE com IA",          desc:"+20 por clique", baseCost:8000,  rate:1.24, effect:20},
+    {key:"c5", icon:"☁️", name:"Escritório em nuvem", desc:"+50 por clique", baseCost:50000, rate:1.26, effect:50},
+  ];
+  const officeDefs = [
+    {key:"o1", icon:"🧑‍💻", name:"Estagiário",         desc:"+$1/s automático",   baseCost:100,    rate:1.15, effect:1},
+    {key:"o2", icon:"👨‍💻", name:"Programador Júnior", desc:"+$5/s automático",   baseCost:600,    rate:1.17, effect:5},
+    {key:"o3", icon:"👩‍💻", name:"Programador Pleno",  desc:"+$20/s automático",  baseCost:4000,   rate:1.19, effect:20},
+    {key:"o4", icon:"🧔", name:"Programador Sênior",   desc:"+$80/s automático",  baseCost:25000,  rate:1.21, effect:80},
+    {key:"o5", icon:"🧑‍💼", name:"Tech Lead",           desc:"+$300/s automático", baseCost:150000, rate:1.23, effect:300},
+  ];
+  const gameUpgradeDefs = [
+    {key:"u1", icon:"🧩", name:"Patch de conteúdo",  desc:"+10% receita/jogador", baseCost:100,    rate:1.20, effect:0.10},
+    {key:"u2", icon:"🛡️", name:"Sistema de guildas", desc:"+15% receita/jogador", baseCost:500,    rate:1.22, effect:0.15},
+    {key:"u3", icon:"🗺️", name:"Expansão de mundo",  desc:"+25% receita/jogador", baseCost:2500,   rate:1.24, effect:0.25},
+    {key:"u4", icon:"🎨", name:"Motor gráfico 3D",   desc:"+35% receita/jogador", baseCost:12000,  rate:1.26, effect:0.35},
+    {key:"u5", icon:"⚔️", name:"PvP competitivo",    desc:"+50% receita/jogador", baseCost:60000,  rate:1.28, effect:0.50},
+    {key:"u6", icon:"🏰", name:"Raides endgame",     desc:"+70% receita/jogador", baseCost:300000, rate:1.30, effect:0.70},
+  ];
+  const dcDefs = [
+    {key:"dc1", icon:"🇧🇷", name:"Brasil",         desc:"+50 vagas",   baseCost:50,     rate:1.16, effect:50},
+    {key:"dc2", icon:"🇺🇸", name:"Estados Unidos", desc:"+120 vagas",  baseCost:800,    rate:1.17, effect:120},
+    {key:"dc3", icon:"🇯🇵", name:"Japão",          desc:"+300 vagas",  baseCost:5000,   rate:1.18, effect:300},
+    {key:"dc4", icon:"🇩🇪", name:"Alemanha",       desc:"+700 vagas",  baseCost:30000,  rate:1.19, effect:700},
+    {key:"dc5", icon:"🇰🇷", name:"Coreia do Sul",  desc:"+1500 vagas", baseCost:150000, rate:1.20, effect:1500},
+    {key:"dc6", icon:"🇦🇺", name:"Austrália",      desc:"+3000 vagas", baseCost:800000, rate:1.21, effect:3000},
+  ];
+  const mktSupportDefs = [
+    {key:"m1", icon:"🧑‍💼", name:"Gerente de Marketing",     desc:"+2 jogadores/seg passivo",    baseCost:300,  rate:1.20, effect:2},
+    {key:"m2", icon:"🤝", name:"Parceria com Influenciador",  desc:"+5 no impacto da campanha",   baseCost:1500, rate:1.22, effect:5},
+    {key:"m3", icon:"🔍", name:"SEO e Redes Sociais",         desc:"-0.5s na recarga da campanha",baseCost:4000, rate:1.25, effect:0.5},
+  ];
+  const contentDefs = [
+    {key:"ct_quest",    icon:"📜", name:"Quests",       desc:"+retenção, leve popularidade",   baseCost:150,  rate:1.20, retention:0.5, popularity:0.3},
+    {key:"ct_dungeon",  icon:"🗝️", name:"Masmorras",     desc:"+retenção",                      baseCost:800,  rate:1.22, retention:0.8, popularity:0.4},
+    {key:"ct_raid",     icon:"🐲", name:"Raids",         desc:"+popularidade e retenção",       baseCost:4000, rate:1.24, retention:1.0, popularity:0.8},
+    {key:"ct_pvp",      icon:"⚔️", name:"Arena PvP",     desc:"+popularidade",                  baseCost:6000, rate:1.24, retention:0.6, popularity:1.0},
+    {key:"ct_housing",  icon:"🏠", name:"Housing",       desc:"+retenção",                      baseCost:3000, rate:1.23, retention:1.2, popularity:0.2},
+    {key:"ct_pets",     icon:"🐾", name:"Pets",          desc:"+popularidade leve",             baseCost:1200, rate:1.21, retention:0.4, popularity:0.5},
+    {key:"ct_mounts",   icon:"🐴", name:"Montarias",     desc:"+popularidade leve",             baseCost:1500, rate:1.21, retention:0.4, popularity:0.5},
+  ];
+  const communityDefs = [
+    {key:"cm_gm",      icon:"🕹️", name:"Game Master",        desc:"-churn, resolve crises melhor", baseCost:500,  rate:1.22, churnReduction:0.3, popularityRegen:0.10, salary:2},
+    {key:"cm_mod",     icon:"🛠️", name:"Moderador",          desc:"-churn leve",                    baseCost:300,  rate:1.20, churnReduction:0.2, popularityRegen:0.05, salary:1},
+    {key:"cm_support", icon:"☎️", name:"Suporte Técnico",     desc:"-churn, +retenção",              baseCost:800,  rate:1.23, churnReduction:0.4, popularityRegen:0.05, salary:3},
+    {key:"cm_cm",      icon:"📢", name:"Community Manager",   desc:"+popularidade passiva",          baseCost:1200, rate:1.24, churnReduction:0.1, popularityRegen:0.30, salary:4},
+  ];
+  clickUpgradeDefs.forEach(d=>d.cat="click");
+  officeDefs.forEach(d=>d.cat="office");
+  gameUpgradeDefs.forEach(d=>d.cat="game");
+  dcDefs.forEach(d=>d.cat="dc");
+  mktSupportDefs.forEach(d=>d.cat="mktSupport");
+  contentDefs.forEach(d=>d.cat="content");
+  communityDefs.forEach(d=>d.cat="community");
+  const allDefs = [].concat(clickUpgradeDefs, officeDefs, gameUpgradeDefs, dcDefs, mktSupportDefs, contentDefs, communityDefs);
+
+  const classDefs = [
+    {key:"cls_warrior",  icon:"🛡️", name:"Guerreiro",   cost:200,  capacity:100, popularity:0.5},
+    {key:"cls_mage",     icon:"🔮", name:"Mago",        cost:300,  capacity:120, popularity:0.6},
+    {key:"cls_archer",   icon:"🏹", name:"Arqueiro",    cost:250,  capacity:110, popularity:0.5},
+    {key:"cls_priest",   icon:"✝️", name:"Sacerdote",   cost:350,  capacity:100, popularity:0.4},
+    {key:"cls_assassin", icon:"🗡️", name:"Assassino",   cost:500,  capacity:130, popularity:0.7},
+    {key:"cls_druid",    icon:"🌿", name:"Druida",      cost:600,  capacity:110, popularity:0.5},
+    {key:"cls_necro",    icon:"💀", name:"Necromante",  cost:900,  capacity:150, popularity:0.9},
+  ];
+  const raceDefs = [
+    {key:"race_human",  icon:"🧑", name:"Humanos",       cost:150,  capacity:100, popularity:0.4},
+    {key:"race_elf",    icon:"🧝", name:"Elfos",         cost:300,  capacity:120, popularity:0.6},
+    {key:"race_orc",    icon:"👹", name:"Orcs",          cost:350,  capacity:110, popularity:0.5},
+    {key:"race_dwarf",  icon:"🧔", name:"Anões",         cost:300,  capacity:110, popularity:0.5},
+    {key:"race_undead", icon:"🧟", name:"Mortos-vivos",  cost:700,  capacity:150, popularity:0.8},
+    {key:"race_demon",  icon:"👺", name:"Demônios",      cost:1200, capacity:200, popularity:1.0},
+  ];
+
+  const expansionDefs = [
+    {key:"exp1", icon:"❄️", name:"The Frozen Kingdom", desc:"Expansão de gelo", cost:5000,   time:30, spike:200,  popularity:15, bonus:0.15},
+    {key:"exp2", icon:"🐉", name:"Rise of Dragons",    desc:"Dragões chegam ao mundo", cost:20000,  time:45, spike:600,  popularity:20, bonus:0.20},
+    {key:"exp3", icon:"🌑", name:"Shadows of Eternity", desc:"Trama sombria", cost:80000,  time:60, spike:1800, popularity:25, bonus:0.25},
+    {key:"exp4", icon:"⚔️", name:"Age of Titans",      desc:"Guerra épica final", cost:300000, time:90, spike:5000, popularity:30, bonus:0.30},
+  ];
+  expansionDefs.forEach((d,i)=>{ d.locked = i>0; });
+
+  const researchDefs = [
+    {key:"res_directx",    icon:"🎮", name:"DirectX",             desc:"+5 por clique",         cost:1000,  time:20, effect:"clickValue", amount:5},
+    {key:"res_opengl",     icon:"🖼️", name:"OpenGL",              desc:"+5% receita/jogador",   cost:1500,  time:25, effect:"revMult",     amount:0.05},
+    {key:"res_linux",      icon:"🐧", name:"Servidor Linux",      desc:"+1000 vagas",           cost:3000,  time:35, effect:"capacity",    amount:1000},
+    {key:"res_oracle",     icon:"🗄️", name:"Banco de Dados Oracle", desc:"+2% retenção",        cost:5000,  time:40, effect:"retention",   amount:2},
+    {key:"res_anticheat",  icon:"🛡️", name:"Anti-cheat",          desc:"+5 popularidade",       cost:8000,  time:45, effect:"popularity",  amount:5},
+    {key:"res_cloud",      icon:"☁️", name:"Cloud Hosting",       desc:"+3000 vagas",           cost:15000, time:50, effect:"capacity",    amount:3000},
+    {key:"res_engine3d",   icon:"🎨", name:"Motor 3D Avançado",   desc:"+20% receita/jogador",   cost:40000, time:60, effect:"revMult",     amount:0.20},
+  ];
+
+  const billingTiers = [
+    {key:0, name:"Gratuito",  desc:"Atrai muita gente, mas ganha pouco por jogador e perde gente rápido.",   revMult:1.0, entryMult:1.3, retentionMult:0.85},
+    {key:1, name:"US$4,99",   desc:"Equilíbrio entre entrada de jogadores e receita.",                       revMult:1.6, entryMult:1.0, retentionMult:1.0},
+    {key:2, name:"US$9,99",   desc:"Menos gente entra, mas paga bem e fica mais fiel.",                      revMult:2.4, entryMult:0.7, retentionMult:1.05},
+    {key:3, name:"US$14,99",  desc:"Público nichado, receita alta, crescimento lento.",                      revMult:3.2, entryMult:0.45, retentionMult:1.1},
+  ];
+
+  const streamerDefs = [
+    {key:"str_small",  icon:"📱", name:"Streamer pequeno",  baseCost:200,   rate:1.08, spike:30,   popularity:2,  cooldown:10},
+    {key:"str_medium", icon:"🎥", name:"Streamer médio",    baseCost:1500,  rate:1.10, spike:150,  popularity:5,  cooldown:20},
+    {key:"str_large",  icon:"📡", name:"Streamer grande",   baseCost:10000, rate:1.12, spike:800,  popularity:10, cooldown:35},
+    {key:"str_legend", icon:"🌟", name:"Streamer lendário", baseCost:60000, rate:1.15, spike:4000, popularity:20, cooldown:60},
+  ];
+
+  const incidentTypes = [
+    {type:"bug",     icon:"🐛", title:"Erro do Sistema",           msg:"Bug crítico detectado! A receita caiu pela metade até ser corrigido.", fix:"clicks"},
+    {type:"fire",    icon:"🔥", title:"Incêndio no Data Center",   msg:"Um data center pegou fogo! Capacidade reduzida até resolver.", fix:"money", capacityPenalty:0.3},
+    {type:"hack",    icon:"🕵️", title:"Ataque Hacker",             msg:"Hackers invadiram os servidores! Jogadores estão saindo.", fix:"money", churnPenalty:0.01},
+    {type:"leak",    icon:"📂", title:"Vazamento de Dados",        msg:"Dados de jogadores vazaram! Popularidade despencando.", fix:"clicks", popularityPenalty:0.5},
+    {type:"outage",  icon:"🔌", title:"Queda Global de Servidores", msg:"Todos os servidores caíram! Receita zerada até resolver.", fix:"clicks", revenuePenalty:1.0},
+    {type:"hate",    icon:"📉", title:"Streamer Detonou o Jogo",   msg:"Um streamer grande criticou o jogo ao vivo. Popularidade caindo.", fix:"money", popularityPenalty:0.3},
+    {type:"corrupt", icon:"💾", title:"Patch Corrompido",          msg:"O último patch corrompeu saves! Retenção péssima.", fix:"clicks", churnPenalty:0.008},
+  ];
+  incidentTypes[0].revenuePenalty = 0.5;
+
+  const seasonalEvents = [
+    {name:"🎃 Halloween",           popularity:10, entryMult:1.3, revMult:1.1},
+    {name:"🎄 Natal",               popularity:15, entryMult:1.4, revMult:1.15},
+    {name:"🐰 Páscoa",              popularity:8,  entryMult:1.2, revMult:1.05},
+    {name:"☀️ Festival de Verão",   popularity:12, entryMult:1.3, revMult:1.1},
+  ];
+
+  const competitorHeadlines = [
+    "Blizzard anunciou um novo MMO!",
+    "Final Fantasy recebeu uma expansão gigante.",
+    "Um novo concorrente coreano entrou no mercado.",
+    "Rumor de que um MMO rival vai fechar os servidores.",
+    "Grande evento da concorrência bombou nas redes.",
+  ];
+
+  const SEQUEL_BASE = 5000;
+
+  // ================= STATE =================
+  let state = {
+    companyName:"", gameName:"",
+    money:15, players:0, playerRemainder:0,
+    marketingUses:0, cooldownUntil:0,
+    sequelCount:0, prestigeMultiplier:1,
+    popularity:50, billingTier:0,
+    researchClickBonus:0, researchRevMult:1, researchCapacityBonus:0, researchRetentionPct:0,
+    expansionBonusMult:1,
+    activeEvent:null, incident:null,
+    reviews:[],
+    lastEntryRate:0, lastLeaveRate:0, lastGross:0, lastExpenses:0, lastNet:0,
+    milestonesHit:{}
+  };
+  allDefs.forEach(d=> state[d.key]=0 );
+
+  let incidentTimer=null;
+
+  // ================= FORMAT HELPERS =================
+  function nFormat(num, isInt){
+    if(num===undefined||isNaN(num)) return "0";
+    const sign = num<0?"-":"";
+    num = Math.abs(num);
+    if(num<1000) return sign + (isInt ? Math.floor(num) : (Number.isInteger(num)?num:num.toFixed(1)));
+    const units=["","K","M","B","T","Qa","Qi"];
+    let u=0;
+    while(num>=1000 && u<units.length-1){ num/=1000; u++; }
+    return sign + num.toFixed(2).replace(/\.00$/,"") + units[u];
+  }
+  function money(n){ return "$"+nFormat(n,false); }
+  function players(n){ return nFormat(n,true); }
+  function costFor(base, count, rate){ return base * Math.pow(rate, count); }
+  function sequelThreshold(){ return Math.floor(SEQUEL_BASE * Math.pow(2, state.sequelCount)); }
+
+  // ================= DERIVED STATE =================
+  function computeDerived(){
+    let capacity=0, revMult=1, clickValue=2, officeIncome=0, growthPassive=0, campaignBoostBonus=0, cooldownReduction=0;
+    dcDefs.forEach(d=> capacity += state[d.key]*d.effect );
+    gameUpgradeDefs.forEach(d=> revMult *= Math.pow(1+d.effect, state[d.key]) );
+    clickUpgradeDefs.forEach(d=> clickValue += state[d.key]*d.effect );
+    officeDefs.forEach(d=> officeIncome += state[d.key]*d.effect );
+    growthPassive += state.m1*mktSupportDefs[0].effect;
+    campaignBoostBonus += state.m2*mktSupportDefs[1].effect;
+    cooldownReduction += state.m3*mktSupportDefs[2].effect;
+
+    let contentRetentionTotal=0, contentPopularityTotal=0;
+    contentDefs.forEach(d=>{ contentRetentionTotal += state[d.key]*d.retention; contentPopularityTotal += state[d.key]*d.popularity; });
+
+    let classesCapacity=0, classesPopularity=0;
+    classDefs.concat(raceDefs).forEach(d=>{ if(state[d.key]){ classesCapacity += d.capacity; classesPopularity += d.popularity; } });
+    capacity += classesCapacity;
+
+    let communityChurnReduction=0, communityPopularityRegen=0, communitySalaries=0;
+    communityDefs.forEach(d=>{ communityChurnReduction += state[d.key]*d.churnReduction; communityPopularityRegen += state[d.key]*d.popularityRegen; communitySalaries += state[d.key]*d.salary; });
+
+    capacity += state.researchCapacityBonus||0;
+    clickValue += state.researchClickBonus||0;
+    revMult *= (state.researchRevMult||1);
+    revMult *= (state.expansionBonusMult||1);
+
+    const tier = billingTiers[state.billingTier];
+    revMult *= tier.revMult;
+
+    let seasonalEntryMult=1, seasonalRevMult=1;
+    if(state.activeEvent){ seasonalEntryMult = state.activeEvent.entryMult; seasonalRevMult = state.activeEvent.revMult; }
+    revMult *= seasonalRevMult;
+
+    let revenuePerPlayer = 0.20*revMult*state.prestigeMultiplier;
+    let finalClickValue = clickValue*state.prestigeMultiplier;
+    let finalOfficeIncome = officeIncome*state.prestigeMultiplier;
+
+    let churnPenalty=0, capacityMult=1;
+    if(state.incident && state.incident.active){
+      const it = state.incident;
+      if(it.revenuePenalty){ revenuePerPlayer *= (1-it.revenuePenalty); finalOfficeIncome *= (1-it.revenuePenalty); }
+      if(it.capacityPenalty){ capacityMult *= (1-it.capacityPenalty); }
+      if(it.churnPenalty){ churnPenalty += it.churnPenalty; }
+    }
+    capacity = Math.floor(capacity*capacityMult);
+
+    const entryMult = tier.entryMult * seasonalEntryMult * (state.popularity/100);
+    const effectiveGrowth = growthPassive*entryMult;
+
+    const baseChurn = Math.max(0.0005, 0.006 - contentRetentionTotal*0.0003 - communityChurnReduction*0.0015 - (state.researchRetentionPct||0)*0.0005);
+    const churnRate = Math.max(0.0002, baseChurn/tier.retentionMult + churnPenalty);
+
+    return {
+      capacity, revenuePerPlayer, clickValue:finalClickValue, officeIncome:finalOfficeIncome,
+      growthPassive:effectiveGrowth, campaignBoost:15+campaignBoostBonus,
+      cooldown:Math.max(2, 6-cooldownReduction),
+      churnRate, contentPopularityTotal, communityPopularityRegen, classesPopularity, communitySalaries, tier
+    };
+  }
+
+  // ================= LOG =================
+  const logMessages = {
+    upgrade:["Patch aplicado com sucesso pela equipe de dev.","Comunidade elogiou as novidades no fórum oficial.","Bugs corrigidos, jogadores mais satisfeitos.","Nova build publicada no launcher do jogo."],
+    click:["Setup do desenvolvedor melhorado.","Produtividade ao codar aumentou.","Novo equipamento chegou ao escritório."],
+    office:["Novo contratado começou a trabalhar automaticamente.","Equipe de desenvolvimento cresceu.","Escritório automatizando mais tarefas."],
+    marketing:["Estrutura de marketing reforçada.","Equipe de growth ganhou mais recursos.","Novo processo de aquisição implementado."],
+    campaign:["Campanha de anúncios rodou nas redes sociais.","Pico de tráfego logo após o anúncio.","Influenciador comentou sobre o jogo.","Anúncio pago gerou uma nova leva de jogadores."],
+    content:["A comunidade adorou o novo conteúdo.","Jogadores elogiaram a novidade no fórum.","Conteúdo novo publicado com sucesso."],
+    community:["Equipe de comunidade reforçada.","Jogadores notaram o suporte melhor.","Moral da comunidade em alta."]
+  };
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function addLog(text, cls){
+    const wrap = el("log");
+    const div = document.createElement("div");
+    div.className = "entry" + (cls?(" "+cls):"");
+    const t = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    div.innerHTML = '<span class="t">['+t+']</span> ' + text;
+    wrap.prepend(div);
+    while(wrap.children.length>80) wrap.removeChild(wrap.lastChild);
+  }
+
+  const milestones = [50,100,500,1000,5000,10000,50000,100000,500000,1000000];
+  function checkMilestones(){
+    milestones.forEach(m=>{
+      if(state.players>=m && !state.milestonesHit[m]){
+        state.milestonesHit[m]=true;
+        addLog("🏆 "+players(m)+" jogadores alcançados em "+state.gameName+"!", "milestone");
+      }
+    });
+  }
+
+  // ================= TIERED SHOP (repeatable) =================
+  function buildRows(containerId, defs){
+    const container = el(containerId);
+    defs.forEach(def=>{
+      const row = document.createElement("div");
+      row.className = "item raised";
+      row.innerHTML =
+        '<div class="icon">'+def.icon+'</div>'+
+        '<div class="info"><div class="name">'+def.name+'</div><div class="desc">'+def.desc+'</div><div class="count">Nível: <span class="cnt">0</span></div></div>'+
+        '<button class="win-btn buyBtn">$0</button>';
+      container.appendChild(row);
+      def._cntEl = row.querySelector(".cnt");
+      def._btnEl = row.querySelector(".buyBtn");
+      def._btnEl.addEventListener("click", ()=> buyItem(def) );
+    });
+  }
+  function logForCat(def){
+    if(def.cat==="dc"){ addLog("Novo data center inaugurado em "+def.name+" "+def.icon, "server"); return; }
+    const map = {
+      click:[logMessages.click,"upgrade"], office:[logMessages.office,"office"], game:[logMessages.upgrade,"upgrade"],
+      mktSupport:[logMessages.marketing,"marketing"], content:[logMessages.content,"upgrade"], community:[logMessages.community,"office"]
+    };
+    const m = map[def.cat] || [logMessages.upgrade,"upgrade"];
+    addLog(pick(m[0])+" ("+def.name+")", m[1]);
+  }
+  function buyItem(def){
+    const cost = costFor(def.baseCost, state[def.key], def.rate);
+    if(state.money<cost) return;
+    state.money -= cost;
+    state[def.key]++;
+    logForCat(def);
+    render();
+  }
+  buildRows("clickUpgradesList", clickUpgradeDefs);
+  buildRows("officeList", officeDefs);
+  buildRows("gameUpgradesList", gameUpgradeDefs);
+  buildRows("dcList", dcDefs);
+  buildRows("mktSupportList", mktSupportDefs);
+  buildRows("contentList", contentDefs);
+  buildRows("communityList", communityDefs);
+
+  // ================= ONE-TIME UNLOCKS (classes/races) =================
+  function buildOnceRows(containerId, defs){
+    const container = el(containerId);
+    defs.forEach(def=>{
+      const row = document.createElement("div");
+      row.className = "item raised";
+      row.innerHTML =
+        '<div class="icon">'+def.icon+'</div>'+
+        '<div class="info"><div class="name">'+def.name+'</div><div class="desc">+'+def.capacity+' vagas · +'+def.popularity+' popularidade</div></div>'+
+        '<button class="win-btn buyBtn">'+money(def.cost)+'</button>';
+      container.appendChild(row);
+      def._btnEl = row.querySelector(".buyBtn");
+      state[def.key] = false;
+      def._btnEl.addEventListener("click", ()=> buyOnce(def) );
+    });
+  }
+  function buyOnce(def){
+    if(state[def.key]) return;
+    if(state.money<def.cost) return;
+    state.money -= def.cost;
+    state[def.key] = true;
+    addLog("Novo conteúdo desbloqueado: "+def.name+" "+def.icon, "upgrade");
+    render();
+  }
+  buildOnceRows("classesList", classDefs);
+  buildOnceRows("racesList", raceDefs);
+
+  // ================= TIMED DEVELOPMENT (expansions / research) =================
+  function buildTimedRows(containerId, defs, kind){
+    const container = el(containerId);
+    defs.forEach(def=>{
+      const row = document.createElement("div");
+      row.className = "item raised";
+      row.style.flexDirection = "column";
+      row.style.alignItems = "stretch";
+      row.innerHTML =
+        '<div style="display:flex; align-items:center; gap:8px;"><div class="icon">'+def.icon+'</div>'+
+        '<div class="info"><div class="name">'+def.name+'</div><div class="desc">'+(def.desc||"")+'</div></div></div>'+
+        '<div class="cap-bar sunken" style="margin:6px 0;"><div class="cap-fill devfill"></div></div>'+
+        '<button class="win-btn buyBtn" style="width:100%;"></button>';
+      container.appendChild(row);
+      def._fillEl = row.querySelector(".devfill");
+      def._btnEl = row.querySelector(".buyBtn");
+      def.status = "idle"; def.devEndsAt = 0; def.kind = kind;
+      def._btnEl.addEventListener("click", ()=> startTimed(def) );
+    });
+  }
+  function startTimed(def){
+    if(def.locked) return;
+    if(def.status!=="idle") return;
+    if(state.money<def.cost) return;
+    state.money -= def.cost;
+    def.status = "developing";
+    def.devEndsAt = Date.now() + def.time*1000;
+    addLog((def.kind==="expansion" ? "🏗️ Desenvolvimento de " : "🔬 Pesquisa de ")+def.name+" iniciado!", "upgrade");
+    render();
+  }
+  function finishTimed(def){
+    def.status = "done";
+    if(def.kind==="expansion"){
+      const derived = computeDerived();
+      const applied = Math.min(Math.max(0, derived.capacity-state.players), def.spike);
+      state.players += applied;
+      state.popularity = Math.min(100, state.popularity+def.popularity);
+      state.expansionBonusMult *= (1+def.bonus);
+      addLog("📦 Expansão lançada: "+def.name+"! +"+players(applied)+" jogadores, +"+def.popularity+" popularidade.", "milestone");
+      generateReview(def.name);
+      const nextIdx = expansionDefs.indexOf(def)+1;
+      if(expansionDefs[nextIdx]) expansionDefs[nextIdx].locked = false;
+    } else {
+      applyResearchEffect(def);
+      addLog("🔬 Pesquisa concluída: "+def.name+"!", "milestone");
+    }
+    render();
+  }
+  function applyResearchEffect(def){
+    if(def.effect==="clickValue") state.researchClickBonus += def.amount;
+    else if(def.effect==="revMult") state.researchRevMult *= (1+def.amount);
+    else if(def.effect==="capacity") state.researchCapacityBonus += def.amount;
+    else if(def.effect==="retention") state.researchRetentionPct += def.amount;
+    else if(def.effect==="popularity") state.popularity = Math.min(100, state.popularity+def.amount);
+  }
+  buildTimedRows("expansionsList", expansionDefs, "expansion");
+  buildTimedRows("researchList", researchDefs, "research");
+
+  // ================= REVIEWS =================
+  const reviewOutlets = ["IGN","GameSpot","PC Gamer","Metacritic"];
+  function generateReview(triggerName){
+    let contentTotal=0; contentDefs.forEach(d=> contentTotal+=state[d.key] );
+    const base = 5 + (state.popularity/100)*3 + Math.min(2, contentTotal*0.05) - (state.incident&&state.incident.active?1.2:0);
+    const entries = reviewOutlets.map(name=>{
+      const score = Math.max(0, Math.min(10, base + (Math.random()*1.6-0.8)));
+      return {outlet:name, score:score.toFixed(1), title:triggerName, date:new Date().toLocaleDateString('pt-BR')};
+    });
+    state.reviews = entries.concat(state.reviews).slice(0,20);
+    entries.forEach(r=> addLog("📰 Review da "+r.outlet+" para "+r.title+": "+r.score+"/10", "milestone") );
+    renderReviews();
+  }
+  function renderReviews(){
+    const wrap = el("reviewsList");
+    wrap.innerHTML = "";
+    if(state.reviews.length===0){
+      wrap.innerHTML = '<div style="font-size:10px; color:#404040;">Nenhuma review ainda. Lance uma expansão ou sequência.</div>';
+      return;
+    }
+    state.reviews.forEach(r=>{
+      const div = document.createElement("div");
+      div.className = "item raised";
+      div.innerHTML = '<div class="icon">📰</div><div class="info"><div class="name">'+r.outlet+" — "+r.score+'/10</div><div class="desc">'+r.title+' · '+r.date+'</div></div>';
+      wrap.appendChild(div);
+    });
+  }
+  renderReviews();
+
+  // ================= BILLING =================
+  function buildBilling(){
+    const wrap = el("billingList");
+    billingTiers.forEach(t=>{
+      const row = document.createElement("div");
+      row.className = "item raised";
+      row.innerHTML = '<div class="icon">💳</div><div class="info"><div class="name">'+t.name+'</div><div class="desc">'+t.desc+'</div></div><button class="win-btn buyBtn">Selecionar</button>';
+      wrap.appendChild(row);
+      t._btnEl = row.querySelector(".buyBtn");
+      t._btnEl.addEventListener("click", ()=>{
+        state.billingTier = t.key;
+        addLog("Modelo de assinatura alterado para "+t.name+".", "marketing");
+        render();
+      });
+    });
+  }
+  buildBilling();
+
+  // ================= STREAMERS =================
+  function buildStreamerRows(){
+    const wrap = el("streamersList");
+    streamerDefs.forEach(def=>{
+      const row = document.createElement("div");
+      row.className = "item raised";
+      row.innerHTML =
+        '<div class="icon">'+def.icon+'</div><div class="info"><div class="name">'+def.name+'</div>'+
+        '<div class="desc">+'+def.spike+' jogadores, +'+def.popularity+' popularidade</div>'+
+        '<div class="count" id="meta_'+def.key+'">Usos: 0</div></div>'+
+        '<button class="win-btn buyBtn" id="btn_'+def.key+'"></button>';
+      wrap.appendChild(row);
+      state[def.key+"_uses"] = 0; state[def.key+"_cd"] = 0;
+      el("btn_"+def.key).addEventListener("click", ()=> triggerStreamer(def) );
+    });
+  }
+  function triggerStreamer(def){
+    const now = Date.now();
+    if(now < (state[def.key+"_cd"]||0)) return;
+    const cost = costFor(def.baseCost, state[def.key+"_uses"], def.rate);
+    if(state.money<cost) return;
+    state.money -= cost;
+    state[def.key+"_uses"]++;
+    const derived = computeDerived();
+    const applied = Math.min(Math.max(0, derived.capacity-state.players), def.spike);
+    state.players += applied;
+    state.popularity = Math.min(100, state.popularity+def.popularity);
+    state[def.key+"_cd"] = now + def.cooldown*1000;
+    addLog("📺 "+def.name+" divulgou o jogo! +"+players(applied)+" jogadores, +"+def.popularity+" popularidade.", "marketing");
+    render();
+  }
+  function updateStreamerRows(){
+    const now = Date.now();
+    streamerDefs.forEach(def=>{
+      const cost = costFor(def.baseCost, state[def.key+"_uses"], def.rate);
+      const btn = el("btn_"+def.key);
+      const remaining = Math.max(0, (state[def.key+"_cd"]||0)-now);
+      if(remaining>0){ btn.textContent = "⏳ "+Math.ceil(remaining/1000)+"s"; btn.disabled = true; }
+      else { btn.textContent = money(cost); btn.disabled = state.money<cost; }
+      el("meta_"+def.key).textContent = "Usos: "+(state[def.key+"_uses"]||0);
+    });
+  }
+  buildStreamerRows();
+
+  // ================= CAMPAIGN =================
+  el("campaignBtn").addEventListener("click", ()=>{
+    const now = Date.now();
+    const derived = computeDerived();
+    const cost = costFor(75, state.marketingUses, 1.10);
+    if(now < state.cooldownUntil) return;
+    if(state.money < cost) return;
+    state.money -= cost;
+    state.marketingUses++;
+    const applied = Math.min(Math.max(0, derived.capacity-state.players), derived.campaignBoost);
+    state.players += applied;
+    state.cooldownUntil = now + derived.cooldown*1000;
+    addLog(pick(logMessages.campaign)+" (+"+players(applied)+" jogadores)", "marketing");
+    render();
+  });
+
+  // ================= INCIDENTS (bugs & crises) =================
+  function scheduleNextIncident(){
+    if(incidentTimer) clearTimeout(incidentTimer);
+    incidentTimer = setTimeout(triggerIncident, 20000+Math.random()*30000);
+  }
+  function triggerIncident(){
+    if(state.incident && state.incident.active){ scheduleNextIncident(); return; }
+    const roll = Math.random();
+    let type = roll<0.45 ? incidentTypes[0] : incidentTypes[1+Math.floor(Math.random()*(incidentTypes.length-1))];
+    const inc = Object.assign({}, type, {active:true, clicksDone:0, clicksNeeded:0, payCost:0});
+    if(inc.fix==="clicks"){ inc.clicksNeeded = Math.min(30, 5+Math.floor(state.players/500)); }
+    else { inc.payCost = Math.max(50, Math.floor(state.money*0.15)); }
+    state.incident = inc;
+    updateIncidentUI();
+    openWindow("win-incident");
+    el("task_win-incident").classList.add("show","urgent");
+    addLog(inc.icon+" "+inc.msg, "bug");
+    render();
+  }
+  function updateIncidentUI(){
+    const inc = state.incident; if(!inc) return;
+    el("incTitleBar").textContent = inc.icon+" "+inc.title;
+    el("incIcon").textContent = inc.icon;
+    el("incTitleText").textContent = inc.title;
+    el("incMsg").textContent = inc.msg;
+    if(inc.fix==="clicks"){
+      el("incProgressWrap").style.display = "block";
+      const pct = inc.clicksNeeded>0 ? (inc.clicksDone/inc.clicksNeeded*100) : 0;
+      el("incProgressFill").style.width = pct+"%";
+      el("incFixBtn").textContent = "🔨 Corrigir ("+inc.clicksDone+"/"+inc.clicksNeeded+")";
+    } else {
+      el("incProgressWrap").style.display = "none";
+      el("incFixBtn").textContent = "💰 Pagar "+money(inc.payCost)+" para resolver";
+    }
+  }
+  function resolveIncident(){
+    addLog("✅ "+state.incident.title+" resolvido!", "milestone");
+    state.incident.active = false;
+    closeWindow("win-incident");
+    el("task_win-incident").classList.remove("show","urgent");
+    scheduleNextIncident();
+    render();
+  }
+  el("incFixBtn").addEventListener("click", ()=>{
+    const inc = state.incident; if(!inc || !inc.active) return;
+    if(inc.fix==="clicks"){
+      inc.clicksDone++;
+      updateIncidentUI();
+      if(inc.clicksDone>=inc.clicksNeeded) resolveIncident();
+    } else {
+      if(state.money<inc.payCost) return;
+      state.money -= inc.payCost;
+      resolveIncident();
+    }
+    render();
+  });
+  el("task_win-incident").addEventListener("click", ()=>{
+    if(state.incident && state.incident.active) toggleWindow("win-incident");
+  });
+
+  // ================= SEASONAL EVENTS =================
+  function scheduleNextSeasonalEvent(){ setTimeout(triggerSeasonalEvent, 90000+Math.random()*60000); }
+  function triggerSeasonalEvent(){
+    if(state.activeEvent){ scheduleNextSeasonalEvent(); return; }
+    const ev = pick(seasonalEvents);
+    state.activeEvent = Object.assign({}, ev, {endsAt: Date.now()+30000});
+    state.popularity = Math.min(100, state.popularity+ev.popularity);
+    showEventBanner(ev.name);
+    addLog("🎉 Evento especial começou: "+ev.name+"!", "milestone");
+    render();
+  }
+  function checkEventExpiry(){
+    if(state.activeEvent && Date.now()>state.activeEvent.endsAt){
+      addLog(state.activeEvent.name+" terminou.", "upgrade");
+      state.activeEvent = null;
+      hideEventBanner();
+      scheduleNextSeasonalEvent();
+    }
+  }
+  function showEventBanner(name){ const b=el("eventBanner"); b.textContent = name+" ativo! Bônus temporário."; b.style.display="block"; }
+  function hideEventBanner(){ el("eventBanner").style.display = "none"; }
+
+  // ================= COMPETITOR EVENTS =================
+  function scheduleNextCompetitor(){ setTimeout(triggerCompetitor, 70000+Math.random()*50000); }
+  function triggerCompetitor(){
+    el("newsHeadline").textContent = pick(competitorHeadlines);
+    openWindow("win-news");
+    render();
+  }
+  function resolveCompetitor(choice){
+    const derived = computeDerived();
+    if(choice==="ignore"){
+      state.popularity = Math.max(0, state.popularity-3);
+      addLog("Você ignorou a notícia da concorrência. Popularidade caiu um pouco.", "upgrade");
+    } else if(choice==="promo"){
+      const cost = Math.max(100, state.money*0.05);
+      if(state.money>=cost){ state.money-=cost; state.popularity=Math.min(100,state.popularity+8); addLog("Promoção lançada em resposta à concorrência! Popularidade subiu.", "marketing"); }
+    } else if(choice==="patch"){
+      if(state.incident && state.incident.active){
+        state.incident.active = false;
+        closeWindow("win-incident");
+        el("task_win-incident").classList.remove("show","urgent");
+        scheduleNextIncident();
+      }
+      state.popularity = Math.min(100, state.popularity+4);
+      addLog("Patch emergencial lançado! Problemas corrigidos e popularidade subiu.", "upgrade");
+    } else if(choice==="discount"){
+      const saved = state.billingTier;
+      state.billingTier = Math.max(0, state.billingTier-1);
+      addLog("Assinatura reduzida temporariamente para atrair mais jogadores.", "marketing");
+      setTimeout(()=>{ state.billingTier = saved; render(); }, 60000);
+    } else if(choice==="invest"){
+      const cost = Math.max(200, state.money*0.08);
+      if(state.money>=cost){
+        state.money -= cost;
+        const applied = Math.min(Math.max(0, derived.capacity-state.players), 100);
+        state.players += applied;
+        addLog("Investimento pesado em marketing! +"+players(applied)+" jogadores.", "marketing");
+      }
+    }
+    closeWindow("win-news");
+    scheduleNextCompetitor();
+    render();
+  }
+  document.querySelectorAll(".newsChoice").forEach(btn=>{
+    btn.addEventListener("click", ()=> resolveCompetitor(btn.getAttribute("data-choice")) );
+  });
+
+  // ================= SEQUELS =================
+  function suggestSequelName(){
+    const numerals = ["II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+    const label = numerals[state.sequelCount] || (state.sequelCount+2);
+    const base = state.gameName.replace(/\s+(II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)$/,"");
+    return base+" "+label;
+  }
+  function updateSeqUI(){
+    const req = sequelThreshold();
+    el("seqReq").textContent = "Necessário: "+players(req)+" jogadores online (atual: "+players(state.players)+")";
+    el("seqBtn").disabled = state.players < req;
+    el("seqCount").textContent = state.sequelCount;
+    el("seqBonus").textContent = "x"+state.prestigeMultiplier.toFixed(2);
+    if(!el("seqInput").value) el("seqInput").value = suggestSequelName();
+  }
+  el("seqBtn").addEventListener("click", ()=>{
+    const req = sequelThreshold();
+    if(state.players < req) return;
+    const newName = el("seqInput").value.trim() || suggestSequelName();
+    const oldName = state.gameName;
+    state.prestigeMultiplier *= 1.25;
+    state.sequelCount++;
+    state.gameName = newName;
+    state.money = 15;
+    state.players = 0; state.playerRemainder = 0;
+    state.marketingUses = 0; state.cooldownUntil = 0;
+    allDefs.forEach(d=> state[d.key]=0 );
+    state.incident = null;
+    closeWindow("win-incident");
+    el("task_win-incident").classList.remove("show","urgent");
+    closeWindow("win-seq");
+    el("seqInput").value = "";
+    addLog("🚀 "+oldName+" foi encerrado. "+newName+" está no ar! Bônus permanente: x"+state.prestigeMultiplier.toFixed(2), "milestone");
+    generateReview(newName);
+    render();
+  });
+
+  // ================= TOTALS HELPERS =================
+  function dcTotalCount(){ let s=0; dcDefs.forEach(d=>s+=state[d.key]); return s; }
+  function officeTotalCount(){ let s=0; officeDefs.forEach(d=>s+=state[d.key]); return s; }
+  function communityTotalCount(){ let s=0; communityDefs.forEach(d=>s+=state[d.key]); return s; }
+
+  // ================= RENDER =================
+  function render(){
+    const derived = computeDerived();
+
+    el("moneyVal").textContent = money(state.money);
+    el("playersVal").textContent = players(state.players);
+    el("incomeVal").textContent = money(state.players*derived.revenuePerPlayer + derived.officeIncome)+"/s";
+
+    el("capLabel").textContent = players(state.players)+" / "+players(derived.capacity);
+    const pct = derived.capacity>0 ? Math.min(100,(state.players/derived.capacity)*100) : 0;
+    el("capFill").style.width = pct+"%";
+
+    allDefs.forEach(def=>{
+      const cost = costFor(def.baseCost, state[def.key], def.rate);
+      def._cntEl.textContent = state[def.key];
+      def._btnEl.textContent = money(cost);
+      def._btnEl.disabled = state.money < cost;
+    });
+
+    const now = Date.now();
+    const cCost = costFor(75, state.marketingUses, 1.10);
+    const remaining = Math.max(0, state.cooldownUntil-now);
+    const cBtn = el("campaignBtn");
+    if(remaining>0){ cBtn.textContent = "⏳ Aguarde "+Math.ceil(remaining/1000)+"s"; cBtn.disabled = true; }
+    else { cBtn.textContent = money(cCost)+" — Lançar campanha"; cBtn.disabled = state.money < cCost; }
+    el("campaignMeta").textContent = "Usos: "+state.marketingUses+" · Impacto: +"+nFormat(derived.campaignBoost,true)+" jogadores · Recarga: "+derived.cooldown.toFixed(1)+"s";
+
+    updateSeqUI();
+    updateOnceRows();
+    updateTimedRows();
+    updateBillingRows();
+    updateStreamerRows();
+    updateAnalytics();
+  }
+  function updateOnceRows(){
+    classDefs.concat(raceDefs).forEach(def=>{
+      def._btnEl.textContent = state[def.key] ? "✅ Desbloqueado" : money(def.cost);
+      def._btnEl.disabled = state[def.key] || state.money<def.cost;
+    });
+  }
+  function updateTimedRows(){
+    const now = Date.now();
+    expansionDefs.concat(researchDefs).forEach(def=>{
+      if(def.status==="done"){
+        def._btnEl.textContent = "✅ Concluído";
+        def._btnEl.disabled = true;
+        def._fillEl.style.width = "100%";
+      } else if(def.status==="developing"){
+        const remaining = Math.max(0, def.devEndsAt-now);
+        const pctDone = 100 - (remaining/(def.time*1000))*100;
+        def._fillEl.style.width = Math.max(0,Math.min(100,pctDone))+"%";
+        def._btnEl.textContent = "⏳ "+Math.ceil(remaining/1000)+"s restantes";
+        def._btnEl.disabled = true;
+      } else if(def.locked){
+        def._btnEl.textContent = "🔒 Bloqueado";
+        def._btnEl.disabled = true;
+        def._fillEl.style.width = "0%";
+      } else {
+        def._btnEl.textContent = money(def.cost)+" — Iniciar";
+        def._btnEl.disabled = state.money<def.cost;
+        def._fillEl.style.width = "0%";
+      }
+    });
+  }
+  function updateBillingRows(){
+    billingTiers.forEach(t=>{
+      t._btnEl.textContent = state.billingTier===t.key ? "✅ Ativo" : "Selecionar";
+      t._btnEl.disabled = state.billingTier===t.key;
+    });
+  }
+  function updateAnalytics(){
+    const derived = computeDerived();
+    el("popFill").style.width = state.popularity+"%";
+    el("popVal").textContent = Math.round(state.popularity);
+    el("entryRateVal").textContent = nFormat(state.lastEntryRate||0, true);
+    el("leaveRateVal").textContent = nFormat(state.lastLeaveRate||0, true);
+    el("retentionVal").textContent = ((1-derived.churnRate)*100).toFixed(2);
+    el("grossVal").textContent = money(state.lastGross||0);
+    el("expVal").textContent = money(state.lastExpenses||0);
+    el("netVal").textContent = money(state.lastNet||0);
+    const margin = (state.lastGross||0)>0 ? ((state.lastNet/state.lastGross)*100).toFixed(1) : "0.0";
+    el("marginVal").textContent = margin;
+  }
+
+  // ================= CLICK =================
+  el("clickBtn").addEventListener("click", ()=>{
+    const derived = computeDerived();
+    state.money += derived.clickValue;
+    render();
+  });
+
+  // ================= GAME LOOP =================
+  function tick(){
+    const derived = computeDerived();
+    let entryRate = 0;
+    if(state.players < derived.capacity && derived.growthPassive>0){
+      entryRate = derived.growthPassive*(0.8+Math.random()*0.4);
+    }
+    const leaveRate = state.players*derived.churnRate;
+    const net = Math.min(Math.max(0, derived.capacity-state.players), entryRate) - leaveRate;
+    state.playerRemainder += net;
+    const whole = Math.trunc(state.playerRemainder);
+    if(whole!==0){
+      state.players = Math.max(0, Math.min(derived.capacity, state.players+whole));
+      state.playerRemainder -= whole;
+    }
+    state.lastEntryRate = entryRate;
+    state.lastLeaveRate = leaveRate;
+
+    const gross = state.players*derived.revenuePerPlayer + derived.officeIncome;
+    const serverPower = dcTotalCount()*2;
+    const officeRent = 20 + Math.floor((officeTotalCount()+communityTotalCount())/5)*10;
+    const salaries = derived.communitySalaries + officeTotalCount()*1.5;
+    const taxes = Math.max(0,gross)*0.15;
+    const expenses = serverPower+officeRent+salaries+taxes;
+    const netP = gross-expenses;
+    state.money += netP;
+    state.lastGross = gross; state.lastExpenses = expenses; state.lastNet = netP;
+
+    let popDelta = derived.contentPopularityTotal*0.01 + derived.communityPopularityRegen + derived.classesPopularity*0.003 - 0.04;
+    if(state.incident && state.incident.active && state.incident.popularityPenalty) popDelta -= state.incident.popularityPenalty;
+    if(derived.capacity>0 && state.players >= derived.capacity*0.95) popDelta -= 0.15;
+    state.popularity = Math.max(0, Math.min(100, state.popularity+popDelta));
+
+    checkMilestones();
+    checkTimedCompletions();
+    checkEventExpiry();
+    render();
+  }
+  function checkTimedCompletions(){
+    const now = Date.now();
+    expansionDefs.concat(researchDefs).forEach(def=>{
+      if(def.status==="developing" && now>=def.devEndsAt) finishTimed(def);
+    });
+  }
+  setInterval(tick, 1000);
+
+  // ================= CLOCK =================
+  function updateClock(){ el("clock").textContent = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+  updateClock();
+  setInterval(updateClock, 10000);
+
+  // ================= WINDOW MANAGER =================
+  const windowsMeta = [
+    {id:"win-prog",       icon:"💻", label:"Programação", defaultOpen:true},
+    {id:"win-game",       icon:"🎮", label:"Jogo",         defaultOpen:false},
+    {id:"win-dc",         icon:"🌐", label:"DataCenter",   defaultOpen:false},
+    {id:"win-mkt",        icon:"📣", label:"Marketing",    defaultOpen:false},
+    {id:"win-seq",        icon:"🚀", label:"Sequências",   defaultOpen:false},
+    {id:"win-analytics",  icon:"📊", label:"Analytics",    defaultOpen:true},
+    {id:"win-billing",    icon:"💳", label:"Billing",      defaultOpen:false},
+    {id:"win-expansions", icon:"📦", label:"Expansões",    defaultOpen:false},
+    {id:"win-content",    icon:"📜", label:"Conteúdo",     defaultOpen:false},
+    {id:"win-classes",    icon:"⚔️", label:"Classes",      defaultOpen:false},
+    {id:"win-community",  icon:"👥", label:"Community",    defaultOpen:false},
+    {id:"win-streamers",  icon:"📺", label:"Streamers",    defaultOpen:false},
+    {id:"win-research",   icon:"🔬", label:"Research",     defaultOpen:false},
+    {id:"win-reviews",    icon:"📰", label:"Reviews",      defaultOpen:false},
+    {id:"win-log",        icon:"📋", label:"Patch Notes",  defaultOpen:true},
+  ];
+  let zTop = 100;
+  function bringToFront(id){ zTop++; el(id).style.zIndex = zTop; }
+  function openWindow(id){ el(id).classList.add("open"); const t=el("task_"+id); if(t) t.classList.add("active"); bringToFront(id); }
+  function closeWindow(id){ el(id).classList.remove("open"); const t=el("task_"+id); if(t) t.classList.remove("active"); }
+  function toggleWindow(id){ el(id).classList.contains("open") ? closeWindow(id) : openWindow(id); }
+
+  function positionWindows(){
+    windowsMeta.forEach((w,i)=>{
+      const we = el(w.id);
+      we.style.top = (50+(i%5)*24)+"px";
+      we.style.left = (10+(i*30)%460)+"px";
+    });
+  }
+  positionWindows();
+
+  function buildTaskbarApps(){
+    const wrap = el("taskAppsWrap");
+    const incidentBtn = el("task_win-incident");
+    windowsMeta.forEach(w=>{
+      const btn = document.createElement("div");
+      btn.className = "taskApp raised show";
+      btn.id = "task_"+w.id;
+      btn.innerHTML = "<span>"+w.icon+"</span><span>"+w.label+"</span>";
+      btn.addEventListener("click", ()=> toggleWindow(w.id) );
+      wrap.insertBefore(btn, incidentBtn);
+    });
+  }
+  buildTaskbarApps();
+
+  document.querySelectorAll("[data-close]").forEach(btn=>{
+    btn.addEventListener("click", (e)=>{ e.stopPropagation(); closeWindow(btn.getAttribute("data-close")); });
+  });
+
+  document.querySelectorAll('.titlebar[data-win]').forEach(bar=>{
+    const winId = bar.getAttribute("data-win");
+    const winEl = el(winId);
+    bar.addEventListener("pointerdown", (e)=>{
+      if(e.target.closest("[data-close]")) return;
+      bringToFront(winId);
+      const rect = winEl.getBoundingClientRect();
+      const deskRect = el("desktop").getBoundingClientRect();
+      const offX = e.clientX - rect.left;
+      const offY = e.clientY - rect.top;
+      function move(ev){
+        let nx = ev.clientX - deskRect.left - offX;
+        let ny = ev.clientY - deskRect.top - offY;
+        nx = Math.max(0, Math.min(nx, deskRect.width-40));
+        ny = Math.max(0, Math.min(ny, deskRect.height-40));
+        winEl.style.left = nx+"px"; winEl.style.top = ny+"px";
+      }
+      function up(){ document.removeEventListener("pointermove", move); document.removeEventListener("pointerup", up); }
+      document.addEventListener("pointermove", move);
+      document.addEventListener("pointerup", up);
+    });
+    bar.addEventListener("mousedown", ()=> bringToFront(winId) );
+  });
+
+  // ================= START MENU / WALLPAPER / SHORTCUTS =================
+  const wallpapers = [
+    {name:"Teal clássico", color:"#008080"}, {name:"Azul marinho", color:"#000080"}, {name:"Verde escuro", color:"#013220"},
+    {name:"Roxo", color:"#4b0082"}, {name:"Cinza", color:"#808080"}, {name:"Preto", color:"#000000"},
+    {name:"Bordô", color:"#800020"}, {name:"Petróleo", color:"#003b3b"},
+  ];
+  const wpList = el("wallpaperList");
+  wallpapers.forEach(w=>{
+    const item = document.createElement("div");
+    item.className = "wallpaper-item";
+    item.innerHTML = '<span class="swatch" style="background:'+w.color+'"></span><span>'+w.name+'</span>';
+    item.addEventListener("click", ()=>{ el("desktop").style.backgroundColor = w.color; el("startMenu").classList.remove("open"); });
+    wpList.appendChild(item);
+  });
+
+  const newWindowIds = ["win-analytics","win-billing","win-expansions","win-content","win-classes","win-community","win-streamers","win-research","win-reviews"];
+  function buildStartShortcuts(){
+    const wrap = el("startShortcuts");
+    windowsMeta.filter(w=> newWindowIds.includes(w.id)).forEach(w=>{
+      const item = document.createElement("div");
+      item.className = "wallpaper-item";
+      item.innerHTML = "<span>"+w.icon+"</span><span>"+w.label+"</span>";
+      item.addEventListener("click", ()=>{ openWindow(w.id); el("startMenu").classList.remove("open"); });
+      wrap.appendChild(item);
+    });
+  }
+  buildStartShortcuts();
+
+  el("startBtn").addEventListener("click", (e)=>{ e.stopPropagation(); el("startMenu").classList.toggle("open"); });
+  document.addEventListener("click", (e)=>{
+    if(!e.target.closest("#startMenu") && !e.target.closest("#startBtn")) el("startMenu").classList.remove("open");
+  });
+
+  // ================= SETUP =================
+  el("foundBtn").addEventListener("click", ()=>{
+    const c = el("companyInput").value.trim() || "Estúdio Sem Nome";
+    const g = el("gameInput").value.trim() || "Jogo Sem Título";
+    state.companyName = c;
+    state.gameName = g;
+    el("setupWindow").style.display = "none";
+    el("statusBar").classList.add("show");
+    windowsMeta.forEach(w=>{ if(w.defaultOpen) openWindow(w.id); });
+    addLog("🎮 "+g+" entra em desenvolvimento na "+c+"! Update 1.5 'World Expansion' ativo.", "milestone");
+    addLog("Use Programação, Jogo e DataCenter para crescer a base técnica.");
+    addLog("Use Conteúdo, Classes e Community para manter a popularidade e retenção em dia.");
+    addLog("Billing define seu modelo de assinatura. Expansões e Research dão bônus permanentes.");
+    addLog("Fique de olho em incidentes — corrija antes que a receita despenque!");
+    scheduleNextIncident();
+    scheduleNextSeasonalEvent();
+    scheduleNextCompetitor();
+    render();
+  });
+  [el("companyInput"), el("gameInput")].forEach(inp=>{
+    inp.addEventListener("keydown", e=>{ if(e.key==="Enter") el("foundBtn").click(); });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
