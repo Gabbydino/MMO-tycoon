@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MMO Tycoon 98 — Update 2.0</title>
+<title>MMO Tycoon 98 — Update 2.1</title>
 <style>
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;height:100%;}
@@ -63,8 +63,8 @@ fieldset.win-group:last-child{margin-bottom:0;}
 #campaignBtn{width:100%; font-size:12px; font-weight:bold; padding:10px;}
 .campaign-meta{font-size:10px; color:#000080; margin-top:6px; font-family:"Courier New",monospace;}
 #log,#eventsLog,#chatFeed{flex:1; background:#000; color:#c0c0c0; font-family:"Courier New",monospace; font-size:11px; line-height:1.6; padding:8px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:2px; border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #fff; border-bottom:2px solid #fff; min-height:220px;}
-#log .entry,#eventsLog .entry{opacity:0; animation:fadein .25s forwards;}
-#log .entry .t,#eventsLog .entry .t{color:#666; margin-right:6px;}
+.entry{opacity:0; animation:fadein .25s forwards;}
+.entry .t{color:#666; margin-right:6px;}
 .entry.milestone{color:#ffff55;} .entry.server{color:#55ff55;} .entry.upgrade{color:#bb88ff;} .entry.marketing{color:#ff88bb;} .entry.office{color:#7fdcff;} .entry.bug{color:#ff5555;}
 @keyframes fadein{from{opacity:0;} to{opacity:1;}}
 #startMenu{position:absolute; bottom:34px; left:2px; width:220px; max-height:80vh; overflow-y:auto; background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #000; border-bottom:2px solid #000; box-shadow:3px 3px 10px rgba(0,0,0,.4); display:none; flex-direction:column; padding:4px; z-index:9999;}
@@ -82,6 +82,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
 .taskApp.urgent{animation:blinkTask 1s infinite;}
 #taskAppsWrap{display:flex; gap:4px; flex:1; overflow-x:auto; min-width:0;}
 #clock{padding:4px 10px; font-size:11px; font-family:"Courier New",monospace; flex-shrink:0;}
+.bugcell{height:50px; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer;}
 ::-webkit-scrollbar{width:14px; height:14px;}
 ::-webkit-scrollbar-track{background:#c0c0c0;}
 ::-webkit-scrollbar-thumb{background:#c0c0c0; border-top:2px solid #fff; border-left:2px solid #fff; border-right:2px solid #404040; border-bottom:2px solid #404040;}
@@ -93,7 +94,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
   <div id="setupWindow">
     <div class="titlebar"><span class="ttext">🎮 Assistente de Novo Estúdio</span><span class="winbuttons"><span>×</span></span></div>
     <div class="dialog-body">
-      <div class="dialog-row"><div class="dialog-icon">🏢</div><div class="dialog-text">Bem-vindo ao <b>MMO Tycoon 98</b> — Update 2.0. Preencha os dados para fundar seu estúdio.</div></div>
+      <div class="dialog-row"><div class="dialog-icon">🏢</div><div class="dialog-text">Bem-vindo ao <b>MMO Tycoon 98</b> — Update 2.1. Preencha os dados para fundar seu estúdio.</div></div>
       <div class="field"><label for="companyInput">Nome do estúdio:</label><input id="companyInput" type="text" placeholder="Ex: Nebula Games Ltda." maxlength="26"></div>
       <div class="field"><label for="gameInput">Nome do MMORPG:</label><input id="gameInput" type="text" placeholder="Ex: Eterna Online" maxlength="26"></div>
       <div class="dialog-buttons"><button class="win-btn" id="foundBtn">OK</button></div>
@@ -104,7 +105,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     <div class="stat-box sunken money"><div class="lbl">CAIXA</div><div class="val" id="moneyVal">$0</div></div>
     <div class="stat-box sunken players"><div class="lbl">JOGADORES</div><div class="val" id="playersVal">0</div></div>
     <div class="stat-box sunken income"><div class="lbl">RECEITA</div><div class="val" id="incomeVal">$0/s</div></div>
-    <div class="stat-box sunken"><div class="lbl">ANO</div><div class="val" id="yearVal">1998</div></div>
+    <div class="stat-box sunken"><div class="lbl">DATA</div><div class="val" id="yearVal">1998</div></div>
     <div id="eventBanner" class="raised"></div>
   </div>
 
@@ -117,37 +118,19 @@ fieldset.win-group:last-child{margin-bottom:0;}
     </div>
   </div>
 
-  <div class="app-window" id="win-game">
-    <div class="titlebar" data-win="win-game"><span class="ttext">🎮 Jogo.exe</span><span class="winbuttons"><span data-close="win-game">×</span></span></div>
-    <div class="win-content">
-      <div class="click-area raised"><div class="cap-row"><span>Capacidade dos servidores</span><span id="capLabel">0 / 0</span></div><div class="cap-bar sunken"><div class="cap-fill" id="capFill"></div></div></div>
-      <fieldset class="win-group"><legend>✨ Upgrades do jogo — receita por jogador</legend><div id="gameUpgradesList"></div></fieldset>
-    </div>
-  </div>
-
   <div class="app-window" id="win-dc">
     <div class="titlebar" data-win="win-dc"><span class="ttext">🌐 DataCenter.exe</span><span class="winbuttons"><span data-close="win-dc">×</span></span></div>
-    <div class="win-content"><fieldset class="win-group"><legend>🖥️ Servidores por país</legend><div id="dcList"></div></fieldset></div>
+    <div class="win-content">
+      <div class="click-area raised"><div class="cap-row"><span>Capacidade dos servidores</span><span id="capLabel">0 / 0</span></div><div class="cap-bar sunken"><div class="cap-fill" id="capFill"></div></div></div>
+      <fieldset class="win-group"><legend>🖥️ Servidores por país</legend><div id="dcList"></div></fieldset>
+    </div>
   </div>
 
   <div class="app-window" id="win-mkt">
     <div class="titlebar" data-win="win-mkt"><span class="ttext">📣 Marketing.exe</span><span class="winbuttons"><span data-close="win-mkt">×</span></span></div>
     <div class="win-content">
-      <div class="campaign-box raised"><div class="cname">📣 Campanha de anúncios</div><div class="cdesc">Ação manual. Fica mais cara a cada uso e tem recarga.</div><button id="campaignBtn" class="win-btn">$0</button><div class="campaign-meta" id="campaignMeta">Usos: 0</div></div>
+      <div class="campaign-box raised"><div class="cname">📣 Campanha de anúncios</div><div class="cdesc">Ação manual. Fica mais cara a cada uso e tem recarga. Fica mais fraca quanto mais cara for a assinatura.</div><button id="campaignBtn" class="win-btn">$0</button><div class="campaign-meta" id="campaignMeta">Usos: 0</div></div>
       <fieldset class="win-group"><legend>📈 Estrutura de marketing</legend><div id="mktSupportList"></div></fieldset>
-    </div>
-  </div>
-
-  <div class="app-window" id="win-seq">
-    <div class="titlebar" data-win="win-seq"><span class="ttext">🚀 Sequências.exe</span><span class="winbuttons"><span data-close="win-seq">×</span></span></div>
-    <div class="win-content">
-      <fieldset class="win-group"><legend>📦 Novo lançamento</legend>
-        <div style="font-size:10px; color:#404040; margin-bottom:8px;">Reinicia progresso, mas dá bônus permanente de receita.</div>
-        <div class="field"><label for="seqInput">Nome da sequência:</label><input id="seqInput" type="text" maxlength="26"></div>
-        <div id="seqReq" style="font-size:10px; color:#000080; margin-bottom:8px; font-family:'Courier New',monospace;"></div>
-        <button id="seqBtn" class="win-btn" style="width:100%;">🚀 Lançar sequência</button>
-      </fieldset>
-      <div style="font-size:10px; color:#404040;">Sequências: <span id="seqCount">0</span> · Bônus: <span id="seqBonus">x1.00</span></div>
     </div>
   </div>
 
@@ -156,7 +139,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     <div class="win-content">
       <fieldset class="win-group"><legend>📈 Popularidade</legend><div class="cap-bar sunken"><div class="cap-fill" id="popFill" style="background:linear-gradient(90deg,#c00000,#e0b84c,#3ddc97);"></div></div><div style="font-family:'Courier New',monospace; font-size:11px;">Popularidade: <span id="popVal">50</span>/100</div></fieldset>
       <fieldset class="win-group"><legend>👥 Retenção</legend><div style="font-family:'Courier New',monospace; font-size:11px; line-height:1.9;">Entrando: <span id="entryRateVal">0</span>/s<br>Saindo: <span id="leaveRateVal">0</span>/s<br>Retenção: <span id="retentionVal">0</span>%</div></fieldset>
-      <fieldset class="win-group"><legend>💰 Finanças</legend><div style="font-family:'Courier New',monospace; font-size:11px; line-height:1.9;">Receita bruta: <span id="grossVal">$0</span>/s<br>Despesas: <span id="expVal">$0</span>/s<br>Lucro líquido: <span id="netVal">$0</span>/s<br>Margem: <span id="marginVal">0</span>%</div></fieldset>
+      <fieldset class="win-group"><legend>💰 Finanças</legend><div style="font-family:'Courier New',monospace; font-size:11px; line-height:1.9;">Receita/s: <span id="grossVal">$0</span><br>Lucro líquido/s: <span id="netVal">$0</span></div></fieldset>
     </div>
   </div>
 
@@ -172,12 +155,13 @@ fieldset.win-group:last-child{margin-bottom:0;}
 
   <div class="app-window" id="win-content">
     <div class="titlebar" data-win="win-content"><span class="ttext">📜 Conteúdo.exe</span><span class="winbuttons"><span data-close="win-content">×</span></span></div>
-    <div class="win-content"><fieldset class="win-group"><legend>📜 Conteúdo do jogo</legend><div id="contentList"></div></fieldset></div>
-  </div>
-
-  <div class="app-window" id="win-classes">
-    <div class="titlebar" data-win="win-classes"><span class="ttext">⚔️ Classes.exe</span><span class="winbuttons"><span data-close="win-classes">×</span></span></div>
-    <div class="win-content"><fieldset class="win-group"><legend>⚔️ Classes</legend><div id="classesList"></div></fieldset><fieldset class="win-group"><legend>🧬 Raças</legend><div id="racesList"></div></fieldset></div>
+    <div class="win-content">
+      <fieldset class="win-group"><legend>✨ Upgrades do jogo — receita por jogador</legend><div id="gameUpgradesList"></div></fieldset>
+      <fieldset class="win-group"><legend>📜 Conteúdo do jogo</legend><div id="contentList"></div></fieldset>
+      <fieldset class="win-group"><legend>⚔️ Classes</legend><div id="classesList"></div></fieldset>
+      <fieldset class="win-group"><legend>🧬 Raças</legend><div id="racesList"></div></fieldset>
+      <fieldset class="win-group"><legend>🌐 Idiomas</legend><div id="languagesList"></div></fieldset>
+    </div>
   </div>
 
   <div class="app-window" id="win-community">
@@ -195,56 +179,9 @@ fieldset.win-group:last-child{margin-bottom:0;}
     <div class="win-content"><fieldset class="win-group"><legend>🔬 Tecnologias</legend><div id="researchList"></div></fieldset></div>
   </div>
 
-  <div class="app-window" id="win-reviews">
-    <div class="titlebar" data-win="win-reviews"><span class="ttext">📰 Reviews.exe</span><span class="winbuttons"><span data-close="win-reviews">×</span></span></div>
-    <div class="win-content">
-      <fieldset class="win-group"><legend>📰 Notas da crítica (clique numa review)</legend><div id="reviewsList"></div></fieldset>
-      <fieldset class="win-group"><legend>💬 Comentários</legend><div id="reviewComments"><div style="font-size:10px; color:#404040;">Clique em uma review acima para ver comentários de jogadores.</div></div></fieldset>
-    </div>
-  </div>
-
-  <div class="app-window" id="win-chat" style="width:290px;">
-    <div class="titlebar" data-win="win-chat"><span class="ttext">💬 Chat.exe</span><span class="winbuttons"><span data-close="win-chat">×</span></span></div>
-    <div class="win-content" style="display:flex; padding:6px;"><div id="chatFeed"></div></div>
-  </div>
-
-  <div class="app-window" id="win-achievements">
-    <div class="titlebar" data-win="win-achievements"><span class="ttext">🏅 Conquistas.exe</span><span class="winbuttons"><span data-close="win-achievements">×</span></span></div>
-    <div class="win-content">
-      <div style="font-family:'Courier New',monospace; font-size:11px; margin-bottom:8px;" id="achProgress">0/30 desbloqueadas</div>
-      <fieldset class="win-group"><legend>🏅 Lista de conquistas</legend><div id="achievementsList"></div></fieldset>
-    </div>
-  </div>
-
   <div class="app-window" id="win-office">
     <div class="titlebar" data-win="win-office"><span class="ttext">🏢 Escritório.exe</span><span class="winbuttons"><span data-close="win-office">×</span></span></div>
-    <div class="win-content"><fieldset class="win-group"><legend>🏢 Melhorias do escritório</legend><div id="officeUpgradeList"></div></fieldset></div>
-  </div>
-
-  <div class="app-window" id="win-employees">
-    <div class="titlebar" data-win="win-employees"><span class="ttext">👨‍💻 Funcionários.exe</span><span class="winbuttons"><span data-close="win-employees">×</span></span></div>
-    <div class="win-content">
-      <fieldset class="win-group"><legend>👨‍💻 Estado da equipe</legend>
-        <div class="cap-row"><span>Motivação</span><span id="teamMotVal">70</span></div>
-        <div class="cap-bar sunken"><div class="cap-fill" id="teamMotFill" style="background:linear-gradient(90deg,#c00000,#e0b84c,#3ddc97);"></div></div>
-        <div class="cap-row"><span>Cansaço</span><span id="teamFatVal">0</span></div>
-        <div class="cap-bar sunken"><div class="cap-fill" id="teamFatFill" style="background:linear-gradient(90deg,#3ddc97,#e0b84c,#c00000);"></div></div>
-        <div class="cap-row"><span>Experiência</span><span id="teamExpVal">0</span></div>
-        <div class="cap-bar sunken"><div class="cap-fill" id="teamExpFill" style="background:#1084d0;"></div></div>
-        <div style="font-family:'Courier New',monospace; font-size:11px; margin-top:6px;">Produtividade da equipe: <span id="teamProdVal">100</span>%</div>
-      </fieldset>
-      <div id="strikeBanner" class="raised" style="display:none; padding:8px; text-align:center; margin-bottom:10px; color:#800000; font-weight:bold;">🚩 Equipe em greve!</div>
-      <fieldset class="win-group"><legend>🤝 Ações de RH</legend>
-        <button id="raiseBtn" class="win-btn" style="width:100%; margin-bottom:6px;">💰 Conceder aumento geral</button>
-        <button id="vacationBtn" class="win-btn" style="width:100%; margin-bottom:6px;">🏖️ Dar férias coletivas</button>
-        <button id="negotiateBtn" class="win-btn" style="width:100%; display:none;">🤝 Negociar fim da greve</button>
-      </fieldset>
-    </div>
-  </div>
-
-  <div class="app-window" id="win-world">
-    <div class="titlebar" data-win="win-world"><span class="ttext">🌍 Mundo.exe</span><span class="winbuttons"><span data-close="win-world">×</span></span></div>
-    <div class="win-content"><fieldset class="win-group"><legend>🌍 Lançamento mundial</legend><div id="regionsList"></div></fieldset></div>
+    <div class="win-content"><fieldset class="win-group"><legend>🏢 Melhorias do escritório (compra única)</legend><div id="officeUpgradeList"></div></fieldset></div>
   </div>
 
   <div class="app-window" id="win-awards">
@@ -266,7 +203,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
   </div>
 
   <div class="app-window" id="win-events" style="width:300px;">
-    <div class="titlebar" data-win="win-events"><span class="ttext">🎮 Eventos.exe</span><span class="winbuttons"><span data-close="win-events">×</span></span></div>
+    <div class="titlebar" data-win="win-events"><span class="ttext">📻 Notícias.exe</span><span class="winbuttons"><span data-close="win-events">×</span></span></div>
     <div class="win-content" style="display:flex; padding:6px;"><div id="eventsLog"></div></div>
   </div>
 
@@ -296,14 +233,40 @@ fieldset.win-group:last-child{margin-bottom:0;}
           <div class="sunken" style="padding:4px;">Perdidos: <b id="dashLost">0</b></div>
           <div class="sunken" style="padding:4px;">Novos: <b id="dashNew">0</b></div>
           <div class="sunken" style="padding:4px;">Receita: <b id="dashRevenue">$0</b></div>
-          <div class="sunken" style="padding:4px;">Custos: <b id="dashCosts">$0</b></div>
-          <div class="sunken" style="padding:4px;">Lucro: <b id="dashProfit">$0</b></div>
           <div class="sunken" style="padding:4px;">Popularidade: <b id="dashPopularity">0</b></div>
           <div class="sunken" style="padding:4px;">Retenção: <b id="dashRetention">0%</b></div>
           <div class="sunken" style="padding:4px;">Servidores: <b id="dashServers">0</b></div>
-          <div class="sunken" style="padding:4px;">Funcionários: <b id="dashEmployees">0</b></div>
+          <div class="sunken" style="padding:4px;">Equipe: <b id="dashEmployees">0</b></div>
           <div class="sunken" style="padding:4px; grid-column:span 2;">Valor da empresa: <b id="dashValue">$0</b></div>
         </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-chat" style="width:290px;">
+    <div class="titlebar" data-win="win-chat"><span class="ttext">💬 Chat.exe</span><span class="winbuttons"><span data-close="win-chat">×</span></span></div>
+    <div class="win-content" style="display:flex; padding:6px;"><div id="chatFeed"></div></div>
+  </div>
+
+  <div class="app-window" id="win-achievements">
+    <div class="titlebar" data-win="win-achievements"><span class="ttext">🏅 Conquistas.exe</span><span class="winbuttons"><span data-close="win-achievements">×</span></span></div>
+    <div class="win-content">
+      <div style="font-family:'Courier New',monospace; font-size:11px; margin-bottom:8px;" id="achProgress">0/30 desbloqueadas</div>
+      <fieldset class="win-group"><legend>🏅 Lista de conquistas</legend><div id="achievementsList"></div></fieldset>
+    </div>
+  </div>
+
+  <div class="app-window" id="win-minigame" style="width:300px;">
+    <div class="titlebar" data-win="win-minigame"><span class="ttext">🎮 Minigames.exe</span><span class="winbuttons"><span data-close="win-minigame">×</span></span></div>
+    <div class="win-content">
+      <fieldset class="win-group"><legend>🐛 Caça-Bugs</legend>
+        <div style="font-size:10px; color:#404040; margin-bottom:8px;">Clique nos bugs assim que aparecerem! 20 segundos por rodada, cada acerto rende uma graninha.</div>
+        <div id="bugGrid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:8px;"></div>
+        <div style="display:flex; justify-content:space-between; font-family:'Courier New',monospace; font-size:11px; margin-bottom:8px;">
+          <span>Pontuação: <b id="bugGameScore">0</b></span>
+          <span id="bugGameTimer">Pronto</span>
+        </div>
+        <button id="bugGameStart" class="win-btn" style="width:100%;">▶️ Começar rodada</button>
       </fieldset>
     </div>
   </div>
@@ -351,6 +314,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     <div id="taskAppsWrap"><div class="taskApp raised" id="task_win-incident"><span>⚠️</span><span>Incidentes</span></div></div>
     <button class="win-btn" id="pauseBtn" style="padding:4px 8px; font-size:10px; flex-shrink:0;">⏸</button>
     <button class="win-btn" id="speedBtn" style="padding:4px 8px; font-size:10px; flex-shrink:0;">1x</button>
+    <button class="win-btn" id="musicBtn" style="padding:4px 8px; font-size:10px; flex-shrink:0;">🔇</button>
     <div id="clock" class="sunken"></div>
   </div>
 
@@ -360,6 +324,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
 (function(){
   "use strict";
   const el = id => document.getElementById(id);
+  const MAX_LEVEL = 100;
 
   // ================= DEFINITIONS =================
   const clickUpgradeDefs = [
@@ -413,14 +378,14 @@ fieldset.win-group:last-child{margin-bottom:0;}
     {key:"cm_cm",      icon:"📢", name:"Community Manager",   desc:"+popularidade passiva",          baseCost:1200, rate:1.24, churnReduction:0.1, popularityRegen:0.30, salary:4},
   ];
   const officeUpgradeDefs = [
-    {key:"eo1", icon:"🏢", name:"Escritório maior",            desc:"+10% produtividade",         baseCost:2000, rate:1.25, type:"productivity", amount:0.10},
-    {key:"eo2", icon:"🛋️", name:"Sala de descanso",            desc:"-0.02 cansaço/seg",           baseCost:1500, rate:1.22, type:"fatigue",       amount:0.02},
-    {key:"eo3", icon:"☕", name:"Cafeteria",                    desc:"+8 felicidade",               baseCost:2500, rate:1.23, type:"happiness",     amount:8},
-    {key:"eo4", icon:"❄️", name:"Ar-condicionado",              desc:"-0.02 cansaço/seg",           baseCost:1800, rate:1.22, type:"fatigue",       amount:0.02},
-    {key:"eo5", icon:"📶", name:"Internet de alta velocidade",  desc:"+8% produtividade",           baseCost:4000, rate:1.24, type:"productivity",  amount:0.08},
-    {key:"eo6", icon:"🗣️", name:"Sala de reuniões",             desc:"+5 felicidade",               baseCost:3000, rate:1.23, type:"happiness",     amount:5},
-    {key:"eo7", icon:"💻", name:"Computadores modernos",        desc:"+12% produtividade",          baseCost:6000, rate:1.25, type:"productivity",  amount:0.12},
-    {key:"eo8", icon:"🎨", name:"Decoração",                    desc:"+4 felicidade, -2% custos",   baseCost:2200, rate:1.22, type:"happiness",     amount:4, costCut:0.02},
+    {key:"eo1", icon:"🏢", name:"Escritório maior",            desc:"+10% produtividade",         cost:2000,  type:"productivity", amount:0.10},
+    {key:"eo2", icon:"🛋️", name:"Sala de descanso",            desc:"-churn (equipe descansada)",  cost:1500,  type:"fatigue",       amount:1},
+    {key:"eo3", icon:"☕", name:"Cafeteria",                    desc:"+popularidade passiva",       cost:2500,  type:"happiness",     amount:1},
+    {key:"eo4", icon:"❄️", name:"Ar-condicionado",              desc:"-churn (equipe descansada)",  cost:1800,  type:"fatigue",       amount:1},
+    {key:"eo5", icon:"📶", name:"Internet de alta velocidade",  desc:"+8% produtividade",           cost:4000,  type:"productivity", amount:0.08},
+    {key:"eo6", icon:"🗣️", name:"Sala de reuniões",             desc:"+popularidade passiva",       cost:3000,  type:"happiness",     amount:1},
+    {key:"eo7", icon:"💻", name:"Computadores modernos",        desc:"+12% produtividade",          cost:6000,  type:"productivity", amount:0.12},
+    {key:"eo8", icon:"🎨", name:"Decoração",                    desc:"+popularidade passiva",       cost:2200,  type:"happiness",     amount:1},
   ];
   clickUpgradeDefs.forEach(d=>d.cat="click");
   officeDefs.forEach(d=>d.cat="office");
@@ -429,8 +394,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
   mktSupportDefs.forEach(d=>d.cat="mktSupport");
   contentDefs.forEach(d=>d.cat="content");
   communityDefs.forEach(d=>d.cat="community");
-  officeUpgradeDefs.forEach(d=>d.cat="officeUpgrade");
-  const allDefs = [].concat(clickUpgradeDefs, officeDefs, gameUpgradeDefs, dcDefs, mktSupportDefs, contentDefs, communityDefs, officeUpgradeDefs);
+  const allDefs = [].concat(clickUpgradeDefs, officeDefs, gameUpgradeDefs, dcDefs, mktSupportDefs, contentDefs, communityDefs);
 
   const classDefs = [
     {key:"cls_warrior",  icon:"🛡️", name:"Guerreiro",   cost:200,  capacity:100, popularity:0.5},
@@ -448,6 +412,14 @@ fieldset.win-group:last-child{margin-bottom:0;}
     {key:"race_dwarf",  icon:"🧔", name:"Anões",         cost:300,  capacity:110, popularity:0.5},
     {key:"race_undead", icon:"🧟", name:"Mortos-vivos",  cost:700,  capacity:150, popularity:0.8},
     {key:"race_demon",  icon:"👺", name:"Demônios",      cost:1200, capacity:200, popularity:1.0},
+  ];
+  const languageDefs = [
+    {key:"lang_en", icon:"🇺🇸", name:"Inglês",     cost:2000, capacity:200, popularity:5},
+    {key:"lang_pt", icon:"🇧🇷", name:"Português",  cost:1000, capacity:150, popularity:4},
+    {key:"lang_de", icon:"🇩🇪", name:"Alemão",     cost:2500, capacity:220, popularity:5},
+    {key:"lang_ja", icon:"🇯🇵", name:"Japonês",    cost:4000, capacity:180, popularity:6},
+    {key:"lang_ko", icon:"🇰🇷", name:"Coreano",    cost:4500, capacity:190, popularity:6},
+    {key:"lang_zh", icon:"🇨🇳", name:"Mandarim",   cost:8000, capacity:400, popularity:8},
   ];
 
   const expansionDefs = [
@@ -480,15 +452,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
     {key:"str_medium", icon:"🎥", name:"Streamer médio",    baseCost:1500,  rate:1.10, spike:150,  popularity:5,  cooldown:20},
     {key:"str_large",  icon:"📡", name:"Streamer grande",   baseCost:10000, rate:1.12, spike:800,  popularity:10, cooldown:35},
     {key:"str_legend", icon:"🌟", name:"Streamer lendário", baseCost:60000, rate:1.15, spike:4000, popularity:20, cooldown:60},
-  ];
-
-  const regionDefs = [
-    {key:"reg_na", icon:"🇺🇸", name:"América do Norte", lang:"Inglês",       cost:2000, capacityBonus:200, popularityBonus:5},
-    {key:"reg_sa", icon:"🇧🇷", name:"América do Sul",   lang:"Português",    cost:1000, capacityBonus:150, popularityBonus:4},
-    {key:"reg_eu", icon:"🇪🇺", name:"Europa",           lang:"Multilíngue",  cost:2500, capacityBonus:220, popularityBonus:5},
-    {key:"reg_jp", icon:"🇯🇵", name:"Japão",            lang:"Japonês",      cost:4000, capacityBonus:180, popularityBonus:6},
-    {key:"reg_kr", icon:"🇰🇷", name:"Coreia",           lang:"Coreano",      cost:4500, capacityBonus:190, popularityBonus:6},
-    {key:"reg_cn", icon:"🇨🇳", name:"China",            lang:"Mandarim",     cost:8000, capacityBonus:400, popularityBonus:8},
   ];
 
   let rivals = [
@@ -525,10 +488,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
 
   const forumUsernames = ["xXPlayerXx","GuildMaster92","NoobSlayer","MMOFanBR","CasualGamer","EpicRaider","PvPKing","LoreNerd","ServerWatcher","OldSchoolMMO"];
 
-  const reviewCommentsPositive = ["Um dos melhores MMOs que já joguei este ano.","A trilha sonora é simplesmente incrível.","Os desenvolvedores realmente ouvem a comunidade.","Recomendo de olhos fechados.","Viciante, não consigo parar de jogar.","Melhor investimento de tempo que fiz este ano."];
-  const reviewCommentsNegative = ["Servidores instáveis atrapalham a experiência.","Preço da assinatura não compensa o conteúdo.","Precisa de mais conteúdo endgame.","Comunidade tóxica em alguns servidores.","Muitos bugs pra um jogo desse porte.","Desisti depois de duas semanas."];
-  const reviewCommentsMixed = ["Bom jogo, mas tem espaço pra melhorar.","Divertido no início, cansa depois de um tempo.","Gráficos datados mas gameplay sólida.","Vale a pena experimentar, com ressalvas."];
-
   const achievementDefs = [
     {key:"ach1",  icon:"🖱️", name:"Primeiro Clique",       desc:"Clique em Programar pela primeira vez.",              check:function(){ return (state.totalClicks||0)>=1; }},
     {key:"ach2",  icon:"👥", name:"Primeiros 100",         desc:"Alcance 100 jogadores online.",                        check:function(){ return state.players>=100; }},
@@ -550,19 +509,18 @@ fieldset.win-group:last-child{margin-bottom:0;}
     {key:"ach18", icon:"📦", name:"Expansionista",         desc:"Lance todas as 4 expansões.",                          check:function(){ return expansionDefs.every(function(d){return d.status==="done";}); }},
     {key:"ach19", icon:"🔬", name:"Primeira Pesquisa",     desc:"Conclua sua primeira pesquisa.",                       check:function(){ return researchDefs.some(function(d){return d.status==="done";}); }},
     {key:"ach20", icon:"🔬", name:"Cientista Chefe",       desc:"Conclua todas as pesquisas.",                          check:function(){ return researchDefs.every(function(d){return d.status==="done";}); }},
-    {key:"ach21", icon:"🚀", name:"Primeira Sequência",    desc:"Lance a primeira sequência do jogo.",                  check:function(){ return state.sequelCount>=1; }},
-    {key:"ach22", icon:"🚀", name:"Franquia",              desc:"Lance 3 sequências.",                                  check:function(){ return state.sequelCount>=3; }},
+    {key:"ach21", icon:"🎮", name:"Primeira Partida",      desc:"Jogue o Caça-Bugs pela primeira vez.",                 check:function(){ return (state.minigamesPlayed||0)>=1; }},
+    {key:"ach22", icon:"🏆", name:"Mestre do Caça-Bugs",   desc:"Faça 150 pontos em uma rodada do Caça-Bugs.",          check:function(){ return (state.minigameBestScore||0)>=150; }},
     {key:"ach23", icon:"🏆", name:"Primeiro Prêmio",       desc:"Ganhe seu primeiro prêmio anual.",                     check:function(){ return state.awards.length>=1; }},
     {key:"ach24", icon:"🏆", name:"Sala de Troféus",       desc:"Ganhe 10 prêmios.",                                    check:function(){ return state.awards.length>=10; }},
     {key:"ach25", icon:"📈", name:"No Auge",               desc:"Alcance 100 de popularidade.",                         check:function(){ return state.popularity>=100; }},
-    {key:"ach26", icon:"🌍", name:"Lançamento Mundial",    desc:"Lance o jogo em todas as 6 regiões.",                  check:function(){ return regionDefs.every(function(d){return state[d.key];}); }},
+    {key:"ach26", icon:"🌐", name:"Poliglota",             desc:"Desbloqueie todos os 6 idiomas.",                      check:function(){ return languageDefs.every(function(d){return state[d.key];}); }},
     {key:"ach27", icon:"⚔️", name:"Todas as Classes",      desc:"Desbloqueie todas as classes.",                        check:function(){ return classDefs.every(function(d){return state[d.key];}); }},
     {key:"ach28", icon:"🧬", name:"Todas as Raças",        desc:"Desbloqueie todas as raças.",                          check:function(){ return raceDefs.every(function(d){return state[d.key];}); }},
-    {key:"ach29", icon:"🚩", name:"Sobrevivente",          desc:"Resolva uma greve de funcionários.",                   check:function(){ return (state.strikesResolved||0)>=1; }},
+    {key:"ach29", icon:"🏢", name:"Escritório dos Sonhos", desc:"Compre todas as 8 melhorias do escritório.",           check:function(){ return officeUpgradeDefs.every(function(d){return state[d.key];}); }},
     {key:"ach30", icon:"📅", name:"Novo Milênio",          desc:"Chegue ao ano 2000.",                                  check:function(){ return state.currentYear>=2000; }},
   ];
 
-  const SEQUEL_BASE = 5000;
   const DAY_DURATION_MS = 3000;
   const DAYS_PER_YEAR = 30;
 
@@ -571,22 +529,21 @@ fieldset.win-group:last-child{margin-bottom:0;}
     companyName:"", gameName:"",
     money:15, players:0, playerRemainder:0,
     marketingUses:0, cooldownUntil:0,
-    sequelCount:0, prestigeMultiplier:1,
+    prestigeMultiplier:1,
     popularity:50, billingTier:0,
     researchClickBonus:0, researchRevMult:1, researchCapacityBonus:0, researchRetentionPct:0,
     expansionBonusMult:1,
     activeEvent:null, incident:null,
-    reviews:[],
     lastEntryRate:0, lastLeaveRate:0, lastGross:0, lastExpenses:0, lastNet:0,
     milestonesHit:{},
     currentYear:1998, currentDay:1,
     speed:1, paused:false,
-    totalClicks:0, incidentsResolved:0, strikesResolved:0, achievementsUnlocked:{},
-    teamMotivation:70, teamFatigue:0, teamExperience:0,
-    strikeActive:false, strikeEndsAt:0, raiseLevel:0,
+    totalClicks:0, incidentsResolved:0,
     cumGained:0, cumLost:0, allTimeHigh:0, lastRecordLogged:0,
     yearRevenueAccum:0, yearProfitAccum:0, lastYearProfit:null, companyValue:0,
     awards:[], pendingRivalEvent:null,
+    minigamesPlayed:0, minigameBestScore:0,
+    achievementsUnlocked:{},
     history:{players:[], money:[]}
   };
   allDefs.forEach(d=> state[d.key]=0 );
@@ -607,6 +564,9 @@ fieldset.win-group:last-child{margin-bottom:0;}
   function money(n){ return "$"+nFormat(n,false); }
   function players(n){ return nFormat(n,true); }
   function costFor(base, count, rate){ return base * Math.pow(rate, count); }
+  function dcTotalCount(){ let s=0; dcDefs.forEach(d=>s+=state[d.key]); return s; }
+  function officeTotalCount(){ let s=0; officeDefs.forEach(d=>s+=state[d.key]); return s; }
+  function communityTotalCount(){ let s=0; communityDefs.forEach(d=>s+=state[d.key]); return s; }
   function gameSetTimeout(fn, delayMs){
     const adjustedDelay = Math.max(200, delayMs / (state.speed||1));
     return setTimeout(function check(){
@@ -614,10 +574,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
       fn();
     }, adjustedDelay);
   }
-  function sequelThreshold(){ return Math.floor(SEQUEL_BASE * Math.pow(2, state.sequelCount)); }
-  function dcTotalCount(){ let s=0; dcDefs.forEach(d=>s+=state[d.key]); return s; }
-  function officeTotalCount(){ let s=0; officeDefs.forEach(d=>s+=state[d.key]); return s; }
-  function communityTotalCount(){ let s=0; communityDefs.forEach(d=>s+=state[d.key]); return s; }
 
   // ================= DERIVED STATE =================
   function computeDerived(){
@@ -634,18 +590,16 @@ fieldset.win-group:last-child{margin-bottom:0;}
     contentDefs.forEach(d=>{ contentRetentionTotal += state[d.key]*d.retention; contentPopularityTotal += state[d.key]*d.popularity; });
 
     let classesCapacity=0, classesPopularity=0;
-    classDefs.concat(raceDefs).forEach(d=>{ if(state[d.key]){ classesCapacity += d.capacity; classesPopularity += d.popularity; } });
+    classDefs.concat(raceDefs).concat(languageDefs).forEach(d=>{ if(state[d.key]){ classesCapacity += d.capacity; classesPopularity += d.popularity; } });
     capacity += classesCapacity;
 
-    let communityChurnReduction=0, communityPopularityRegen=0, communitySalaries=0;
-    communityDefs.forEach(d=>{ communityChurnReduction += state[d.key]*d.churnReduction; communityPopularityRegen += state[d.key]*d.popularityRegen; communitySalaries += state[d.key]*d.salary; });
+    let communityChurnReduction=0, communityPopularityRegen=0;
+    communityDefs.forEach(d=>{ communityChurnReduction += state[d.key]*d.churnReduction; communityPopularityRegen += state[d.key]*d.popularityRegen; });
 
     capacity += state.researchCapacityBonus||0;
     clickValue += state.researchClickBonus||0;
     revMult *= (state.researchRevMult||1);
     revMult *= (state.expansionBonusMult||1);
-
-    regionDefs.forEach(d=>{ if(state[d.key]) capacity += d.capacityBonus; });
 
     const tier = billingTiers[state.billingTier];
     revMult *= tier.revMult;
@@ -654,22 +608,17 @@ fieldset.win-group:last-child{margin-bottom:0;}
     if(state.activeEvent){ seasonalEntryMult = state.activeEvent.entryMult; seasonalRevMult = state.activeEvent.revMult; }
     revMult *= seasonalRevMult;
 
-    let officeProdMult=1, officeHappinessBonus=0, officeFatigueReduction=0, officeCostCut=0;
-    officeUpgradeDefs.forEach(d=>{
-      const n = state[d.key];
-      if(d.type==="productivity") officeProdMult += n*d.amount;
-      else if(d.type==="happiness") officeHappinessBonus += n*d.amount;
-      else if(d.type==="fatigue") officeFatigueReduction += n*d.amount;
-      if(d.costCut) officeCostCut += n*d.costCut;
+    let officeProdMult=1, officePopRegenBonus=0, officeChurnReduction=0;
+    officeUpgradeDefs.forEach(function(d){
+      if(!state[d.key]) return;
+      if(d.type==="productivity") officeProdMult += d.amount;
+      else if(d.type==="happiness") officePopRegenBonus += 0.03;
+      else if(d.type==="fatigue") officeChurnReduction += 1;
     });
 
-    let teamProdMult = 0.6 + (state.teamMotivation/100)*0.5 + (state.teamExperience/100)*0.3 - (state.teamFatigue/100)*0.25;
-    teamProdMult = Math.max(0.4, Math.min(2.0, teamProdMult)) * officeProdMult;
-    if(state.strikeActive) teamProdMult *= 0.3;
-
     let revenuePerPlayer = 0.20*revMult*state.prestigeMultiplier;
-    let finalClickValue = clickValue*state.prestigeMultiplier*teamProdMult;
-    let finalOfficeIncome = officeIncome*state.prestigeMultiplier*teamProdMult;
+    let finalClickValue = clickValue*state.prestigeMultiplier*officeProdMult;
+    let finalOfficeIncome = officeIncome*state.prestigeMultiplier*officeProdMult;
 
     let churnPenalty=0, capacityMult=1;
     if(state.incident && state.incident.active){
@@ -683,7 +632,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     const entryMult = tier.entryMult * seasonalEntryMult * (state.popularity/100);
     const effectiveGrowth = growthPassive*entryMult;
 
-    const baseChurn = Math.max(0.0005, 0.006 - contentRetentionTotal*0.0003 - communityChurnReduction*0.0015 - (state.researchRetentionPct||0)*0.0005);
+    const baseChurn = Math.max(0.0005, 0.006 - contentRetentionTotal*0.0003 - communityChurnReduction*0.0015 - (state.researchRetentionPct||0)*0.0005 - officeChurnReduction*0.0004);
     const churnRate = Math.max(0.0002, baseChurn/tier.retentionMult + churnPenalty);
 
     const acquisitionMult = Math.max(0.4, 1 - state.billingTier*0.15);
@@ -692,8 +641,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
       capacity, revenuePerPlayer, clickValue:finalClickValue, officeIncome:finalOfficeIncome,
       growthPassive:effectiveGrowth, campaignBoost:(15+campaignBoostBonus)*acquisitionMult, acquisitionMult,
       cooldown:Math.max(2, 6-cooldownReduction),
-      churnRate, contentPopularityTotal, communityPopularityRegen, classesPopularity, communitySalaries, tier,
-      officeCostCut, officeFatigueReduction, officeHappinessBonus, teamProdMult
+      churnRate, contentPopularityTotal, communityPopularityRegen, classesPopularity, officePopRegenBonus, tier
     };
   }
 
@@ -705,8 +653,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     marketing:["Estrutura de marketing reforçada.","Equipe de growth ganhou mais recursos.","Novo processo de aquisição implementado."],
     campaign:["Campanha de anúncios rodou nas redes sociais.","Pico de tráfego logo após o anúncio.","Influenciador comentou sobre o jogo.","Anúncio pago gerou uma nova leva de jogadores."],
     content:["A comunidade adorou o novo conteúdo.","Jogadores elogiaram a novidade no fórum.","Conteúdo novo publicado com sucesso."],
-    community:["Equipe de comunidade reforçada.","Jogadores notaram o suporte melhor.","Moral da comunidade em alta."],
-    officeUpgrade:["A equipe elogiou a nova estrutura do escritório.","O ambiente de trabalho melhorou visivelmente.","Funcionários mais confortáveis no escritório."]
+    community:["Equipe de comunidade reforçada.","Jogadores notaram o suporte melhor.","Moral da comunidade em alta."]
   };
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
   function appendToLog(containerId, text, cls){
@@ -726,7 +673,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
 
   const milestones = [50,100,500,1000,5000,10000,50000,100000,500000,1000000];
   function checkMilestones(){
-    milestones.forEach(m=>{
+    milestones.forEach(function(m){
       if(state.players>=m && !state.milestonesHit[m]){
         state.milestonesHit[m]=true;
         addLog("🏆 "+players(m)+" jogadores alcançados em "+state.gameName+"!", "milestone");
@@ -734,7 +681,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     });
   }
 
-  // ================= TIERED SHOP (repeatable) =================
+  // ================= TIERED SHOP (repeatable, capped at MAX_LEVEL) =================
   function buildRows(containerId, defs){
     const container = el(containerId);
     defs.forEach(def=>{
@@ -754,13 +701,13 @@ fieldset.win-group:last-child{margin-bottom:0;}
     if(def.cat==="dc"){ addLog("Novo data center inaugurado em "+def.name+" "+def.icon, "server"); return; }
     const map = {
       click:[logMessages.click,"upgrade"], office:[logMessages.office,"office"], game:[logMessages.upgrade,"upgrade"],
-      mktSupport:[logMessages.marketing,"marketing"], content:[logMessages.content,"upgrade"], community:[logMessages.community,"office"],
-      officeUpgrade:[logMessages.officeUpgrade,"office"]
+      mktSupport:[logMessages.marketing,"marketing"], content:[logMessages.content,"upgrade"], community:[logMessages.community,"office"]
     };
     const m = map[def.cat] || [logMessages.upgrade,"upgrade"];
     addLog(pick(m[0])+" ("+def.name+")", m[1]);
   }
   function buyItem(def){
+    if(state[def.key] >= MAX_LEVEL) return;
     const cost = costFor(def.baseCost, state[def.key], def.rate);
     if(state.money<cost) return;
     state.money -= cost;
@@ -775,17 +722,17 @@ fieldset.win-group:last-child{margin-bottom:0;}
   buildRows("mktSupportList", mktSupportDefs);
   buildRows("contentList", contentDefs);
   buildRows("communityList", communityDefs);
-  buildRows("officeUpgradeList", officeUpgradeDefs);
 
-  // ================= ONE-TIME UNLOCKS (classes/races) =================
+  // ================= ONE-TIME UNLOCKS (classes/races/languages/office upgrades) =================
   function buildOnceRows(containerId, defs){
     const container = el(containerId);
     defs.forEach(def=>{
       const row = document.createElement("div");
       row.className = "item raised";
+      const descText = def.capacity!==undefined ? ("+"+def.capacity+" vagas · +"+def.popularity+" popularidade") : def.desc;
       row.innerHTML =
         '<div class="icon">'+def.icon+'</div>'+
-        '<div class="info"><div class="name">'+def.name+'</div><div class="desc">+'+def.capacity+' vagas · +'+def.popularity+' popularidade</div></div>'+
+        '<div class="info"><div class="name">'+def.name+'</div><div class="desc">'+descText+'</div></div>'+
         '<button class="win-btn buyBtn">'+money(def.cost)+'</button>';
       container.appendChild(row);
       def._btnEl = row.querySelector(".buyBtn");
@@ -803,54 +750,8 @@ fieldset.win-group:last-child{margin-bottom:0;}
   }
   buildOnceRows("classesList", classDefs);
   buildOnceRows("racesList", raceDefs);
-
-  // ================= REGIONS (Lançamento Mundial) =================
-  function buildRegionRows(){
-    const wrap = el("regionsList");
-    regionDefs.forEach(def=>{
-      const row = document.createElement("div");
-      row.className = "item raised";
-      row.style.flexDirection = "column";
-      row.style.alignItems = "stretch";
-      row.innerHTML =
-        '<div style="display:flex; align-items:center; gap:8px;"><div class="icon">'+def.icon+'</div>'+
-        '<div class="info"><div class="name">'+def.name+' ('+def.lang+')</div><div class="desc regdesc">Bloqueado</div></div></div>'+
-        '<button class="win-btn buyBtn" style="width:100%; margin-top:4px;"></button>';
-      wrap.appendChild(row);
-      def._btnEl = row.querySelector(".buyBtn");
-      def._descEl = row.querySelector(".regdesc");
-      state[def.key] = false;
-      def._btnEl.addEventListener("click", ()=> buyRegion(def) );
-    });
-  }
-  function buyRegion(def){
-    if(state[def.key]) return;
-    if(state.money<def.cost) return;
-    state.money -= def.cost;
-    state[def.key] = true;
-    state.popularity = Math.min(100, state.popularity+def.popularityBonus);
-    addLog("🌍 Jogo lançado em "+def.name+"! +"+def.capacityBonus+" vagas, +"+def.popularityBonus+" popularidade.", "milestone");
-    render();
-  }
-  function updateRegions(){
-    const derived = computeDerived();
-    const activeCount = regionDefs.filter(d=>state[d.key]).length;
-    regionDefs.forEach(def=>{
-      if(state[def.key]){
-        def._btnEl.textContent = "✅ Lançado";
-        def._btnEl.disabled = true;
-        const share = activeCount>0 ? state.players/activeCount : 0;
-        const ping = Math.max(20, Math.min(220, 180 - dcTotalCount()*3));
-        const revShare = share*derived.revenuePerPlayer;
-        def._descEl.textContent = players(Math.floor(share))+" jogadores · "+Math.round(ping)+"ms ping · "+money(revShare)+"/s";
-      } else {
-        def._btnEl.textContent = money(def.cost)+" — Lançar";
-        def._btnEl.disabled = state.money<def.cost;
-        def._descEl.textContent = "Bloqueado";
-      }
-    });
-  }
-  buildRegionRows();
+  buildOnceRows("languagesList", languageDefs);
+  buildOnceRows("officeUpgradeList", officeUpgradeDefs);
 
   // ================= TIMED DEVELOPMENT (expansions / research) =================
   function buildTimedRows(containerId, defs, kind){
@@ -891,7 +792,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
       state.popularity = Math.min(100, state.popularity+def.popularity);
       state.expansionBonusMult *= (1+def.bonus);
       addLog("📦 Expansão lançada: "+def.name+"! +"+players(applied)+" jogadores, +"+def.popularity+" popularidade.", "milestone");
-      generateReview(def.name);
       const nextIdx = expansionDefs.indexOf(def)+1;
       if(expansionDefs[nextIdx]) expansionDefs[nextIdx].locked = false;
     } else {
@@ -909,50 +809,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
   }
   buildTimedRows("expansionsList", expansionDefs, "expansion");
   buildTimedRows("researchList", researchDefs, "research");
-
-  // ================= REVIEWS =================
-  const reviewOutlets = ["IGN","GameSpot","PC Gamer","Metacritic"];
-  function generateReview(triggerName){
-    let contentTotal=0; contentDefs.forEach(d=> contentTotal+=state[d.key] );
-    const base = 5 + (state.popularity/100)*3 + Math.min(2, contentTotal*0.05) - (state.incident&&state.incident.active?1.2:0);
-    const entries = reviewOutlets.map(name=>{
-      const score = Math.max(0, Math.min(10, base + (Math.random()*1.6-0.8)));
-      return {outlet:name, score:score.toFixed(1), title:triggerName, date:new Date().toLocaleDateString('pt-BR')};
-    });
-    state.reviews = entries.concat(state.reviews).slice(0,20);
-    entries.forEach(r=> addLog("📰 Review da "+r.outlet+" para "+r.title+": "+r.score+"/10", "milestone") );
-    renderReviews();
-  }
-  function renderReviews(){
-    const wrap = el("reviewsList");
-    wrap.innerHTML = "";
-    if(state.reviews.length===0){
-      wrap.innerHTML = '<div style="font-size:10px; color:#404040;">Nenhuma review ainda. Lance uma expansão ou sequência.</div>';
-      return;
-    }
-    state.reviews.forEach(r=>{
-      const div = document.createElement("div");
-      div.className = "item raised";
-      div.style.cursor = "pointer";
-      div.innerHTML = '<div class="icon">📰</div><div class="info"><div class="name">'+r.outlet+" — "+r.score+'/10</div><div class="desc">'+r.title+' · '+r.date+' · <i>clique para ver comentários</i></div></div>';
-      div.addEventListener("click", function(){ showReviewComments(r); });
-      wrap.appendChild(div);
-    });
-  }
-  renderReviews();
-  function showReviewComments(review){
-    const wrap = el("reviewComments");
-    const score = parseFloat(review.score);
-    const pool = score>=7 ? reviewCommentsPositive : score<=4 ? reviewCommentsNegative : reviewCommentsMixed;
-    wrap.innerHTML = "";
-    for(let i=0;i<3;i++){
-      const line = pick(pool);
-      const div = document.createElement("div");
-      div.className = "item raised";
-      div.innerHTML = '<div class="icon">💬</div><div class="info"><div class="name">'+pick(forumUsernames)+'</div><div class="desc">"'+line+'"</div></div>';
-      wrap.appendChild(div);
-    }
-  }
 
   // ================= AWARDS =================
   function runAwardsCeremony(){
@@ -1202,12 +1058,11 @@ fieldset.win-group:last-child{margin-bottom:0;}
   function showEventBanner(name){ const b=el("eventBanner"); b.textContent = name+" ativo! Bônus temporário."; b.style.display="block"; }
   function hideEventBanner(){ el("eventBanner").style.display = "none"; }
 
-  // ================= WORLD EVENTS (streamer bom / atraso / greve) =================
+  // ================= WORLD EVENTS =================
   function scheduleNextWorldEvent(){ gameSetTimeout(triggerWorldEvent, 80000+Math.random()*50000); }
   function triggerWorldEvent(){
     const options = ["streamer_good"];
     if(expansionDefs.some(function(d){return d.status==="developing";})) options.push("expansion_delay");
-    if(!state.strikeActive) options.push("strike");
     const choice = pick(options);
     if(choice==="streamer_good"){
       const derived = computeDerived();
@@ -1218,10 +1073,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
     } else if(choice==="expansion_delay"){
       const dev = expansionDefs.find(function(d){return d.status==="developing";});
       if(dev){ const extra=15000+Math.random()*15000; dev.devEndsAt += extra; addLog("⏰ "+dev.name+" atrasou! Mais "+Math.round(extra/1000)+"s de desenvolvimento.", "upgrade"); }
-    } else if(choice==="strike"){
-      state.strikeActive = true;
-      state.strikeEndsAt = Date.now()+40000;
-      addLog("🚩 Os funcionários entraram em greve! Produtividade caiu até resolver.", "bug");
     }
     render();
     scheduleNextWorldEvent();
@@ -1294,47 +1145,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
     });
   }
 
-  // ================= EMPLOYEES (Funcionários) =================
-  el("raiseBtn").addEventListener("click", function(){
-    const cost = (officeTotalCount()+communityTotalCount()+1)*80*(1+(state.raiseLevel||0)*0.25);
-    if(state.money<cost) return;
-    state.money -= cost;
-    state.raiseLevel = (state.raiseLevel||0)+1;
-    state.teamMotivation = Math.min(100, state.teamMotivation+8);
-    addLog("💰 Aumento salarial concedido. Motivação da equipe subiu.", "office");
-    render();
-  });
-  el("vacationBtn").addEventListener("click", function(){
-    const cost = (officeTotalCount()+communityTotalCount()+1)*40;
-    if(state.money<cost) return;
-    state.money -= cost;
-    state.teamFatigue = 0;
-    state.teamMotivation = Math.min(100, state.teamMotivation+5);
-    addLog("🏖️ Férias coletivas concedidas. Cansaço zerado.", "office");
-    render();
-  });
-  el("negotiateBtn").addEventListener("click", function(){
-    const cost = Math.max(200, state.money*0.1);
-    if(state.money<cost) return;
-    state.money -= cost;
-    state.strikeActive = false;
-    state.strikesResolved = (state.strikesResolved||0)+1;
-    addLog("🤝 Greve encerrada após negociação.", "milestone");
-    render();
-  });
-  function updateEmployeesWindow(){
-    const derived = computeDerived();
-    el("teamMotVal").textContent = Math.round(state.teamMotivation);
-    el("teamMotFill").style.width = state.teamMotivation+"%";
-    el("teamFatVal").textContent = Math.round(state.teamFatigue);
-    el("teamFatFill").style.width = state.teamFatigue+"%";
-    el("teamExpVal").textContent = Math.round(state.teamExperience);
-    el("teamExpFill").style.width = state.teamExperience+"%";
-    el("teamProdVal").textContent = Math.round(derived.teamProdMult*100);
-    el("strikeBanner").style.display = state.strikeActive ? "block":"none";
-    el("negotiateBtn").style.display = state.strikeActive ? "block":"none";
-  }
-
   // ================= INTERNET.exe (fórum dinâmico) =================
   function generateForumFeed(){
     const derived = computeDerived();
@@ -1372,164 +1182,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
       wrap.appendChild(div);
     });
   }
-
-  // ================= DASHBOARD =================
-  function drawDashboard(){
-    const winEl = el("win-dashboard");
-    const canvas = el("dashCanvas");
-    if(!canvas || !winEl.classList.contains("open")) return;
-    const ctx = canvas.getContext("2d");
-    const w=canvas.width, h=canvas.height;
-    ctx.fillStyle="#000"; ctx.fillRect(0,0,w,h);
-    const dataP = state.history.players, dataM = state.history.money;
-    if(dataP.length<2) return;
-    function drawLine(data,color){
-      const max = Math.max.apply(null, data.concat([1]));
-      const min = Math.min.apply(null, data.concat([0]));
-      const range = (max-min)||1;
-      ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.beginPath();
-      data.forEach(function(v,i){
-        const x = (i/(data.length-1))*w;
-        const y = h - ((v-min)/range)*h;
-        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      });
-      ctx.stroke();
-    }
-    drawLine(dataP, "#3ddc97");
-    drawLine(dataM, "#e0b84c");
-  }
-  function updateDashboardIndicators(){
-    const derived = computeDerived();
-    el("dashOnline").textContent = players(state.players);
-    el("dashLost").textContent = players(state.cumLost);
-    el("dashNew").textContent = players(state.cumGained);
-    el("dashRevenue").textContent = money(state.lastGross);
-    el("dashCosts").textContent = money(state.lastExpenses);
-    el("dashProfit").textContent = money(state.lastNet);
-    el("dashPopularity").textContent = Math.round(state.popularity)+"/100";
-    el("dashRetention").textContent = ((1-derived.churnRate)*100).toFixed(1)+"%";
-    el("dashServers").textContent = dcTotalCount();
-    el("dashEmployees").textContent = (officeTotalCount()+communityTotalCount());
-    el("dashValue").textContent = money(state.companyValue);
-  }
-
-  // ================= SEQUELS =================
-  function suggestSequelName(){
-    const numerals = ["II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
-    const label = numerals[state.sequelCount] || (state.sequelCount+2);
-    const base = state.gameName.replace(/\s+(II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)$/,"");
-    return base+" "+label;
-  }
-  function updateSeqUI(){
-    const req = sequelThreshold();
-    el("seqReq").textContent = "Necessário: "+players(req)+" jogadores online (atual: "+players(state.players)+")";
-    el("seqBtn").disabled = state.players < req;
-    el("seqCount").textContent = state.sequelCount;
-    el("seqBonus").textContent = "x"+state.prestigeMultiplier.toFixed(2);
-    if(!el("seqInput").value) el("seqInput").value = suggestSequelName();
-  }
-  el("seqBtn").addEventListener("click", function(){
-    const req = sequelThreshold();
-    if(state.players < req) return;
-    const newName = el("seqInput").value.trim() || suggestSequelName();
-    const oldName = state.gameName;
-    state.prestigeMultiplier *= 1.25;
-    state.sequelCount++;
-    state.gameName = newName;
-    state.money = 15;
-    state.players = 0; state.playerRemainder = 0;
-    state.marketingUses = 0; state.cooldownUntil = 0;
-    allDefs.forEach(function(d){ state[d.key]=0; });
-    state.incident = null;
-    closeWindow("win-incident");
-    el("task_win-incident").classList.remove("show","urgent");
-    closeWindow("win-seq");
-    el("seqInput").value = "";
-    addLog("🚀 "+oldName+" foi encerrado. "+newName+" está no ar! Bônus permanente: x"+state.prestigeMultiplier.toFixed(2), "milestone");
-    generateReview(newName);
-    render();
-  });
-
-  // ================= RENDER =================
-  function render(){
-    const derived = computeDerived();
-
-    el("moneyVal").textContent = money(state.money);
-    el("playersVal").textContent = players(state.players);
-    el("incomeVal").textContent = money(state.players*derived.revenuePerPlayer + derived.officeIncome)+"/s";
-    el("yearVal").textContent = "Dia "+state.currentDay+"/"+DAYS_PER_YEAR+" · "+state.currentYear;
-
-    el("capLabel").textContent = players(state.players)+" / "+players(derived.capacity);
-    const pct = derived.capacity>0 ? Math.min(100,(state.players/derived.capacity)*100) : 0;
-    el("capFill").style.width = pct+"%";
-
-    allDefs.forEach(function(def){
-      const cost = costFor(def.baseCost, state[def.key], def.rate);
-      def._cntEl.textContent = state[def.key];
-      def._btnEl.textContent = money(cost);
-      def._btnEl.disabled = state.money < cost;
-    });
-
-    const now = Date.now();
-    const cCost = costFor(75, state.marketingUses, 1.10);
-    const remaining = Math.max(0, state.cooldownUntil-now);
-    const cBtn = el("campaignBtn");
-    if(remaining>0){ cBtn.textContent = "⏳ Aguarde "+Math.ceil(remaining/1000)+"s"; cBtn.disabled = true; }
-    else { cBtn.textContent = money(cCost)+" — Lançar campanha"; cBtn.disabled = state.money < cCost; }
-    el("campaignMeta").textContent = "Usos: "+state.marketingUses+" · Impacto: +"+nFormat(derived.campaignBoost,true)+" jogadores · Recarga: "+derived.cooldown.toFixed(1)+"s";
-
-    updateSeqUI();
-    classDefs.concat(raceDefs).forEach(function(def){
-      def._btnEl.textContent = state[def.key] ? "✅ Desbloqueado" : money(def.cost);
-      def._btnEl.disabled = state[def.key] || state.money<def.cost;
-    });
-    (function updateTimedRows(){
-      const now2 = Date.now();
-      expansionDefs.concat(researchDefs).forEach(function(def){
-        if(def.status==="done"){
-          def._btnEl.textContent = "✅ Concluído"; def._btnEl.disabled = true; def._fillEl.style.width = "100%";
-        } else if(def.status==="developing"){
-          const remaining2 = Math.max(0, def.devEndsAt-now2);
-          const pctDone = 100 - (remaining2/(def.time*1000))*100;
-          def._fillEl.style.width = Math.max(0,Math.min(100,pctDone))+"%";
-          def._btnEl.textContent = "⏳ "+Math.ceil(remaining2/1000)+"s restantes";
-          def._btnEl.disabled = true;
-        } else if(def.locked){
-          def._btnEl.textContent = "🔒 Bloqueado"; def._btnEl.disabled = true; def._fillEl.style.width = "0%";
-        } else {
-          def._btnEl.textContent = money(def.cost)+" — Iniciar"; def._btnEl.disabled = state.money<def.cost; def._fillEl.style.width = "0%";
-        }
-      });
-    })();
-    updateBillingRows();
-    updateStreamerRows();
-    updateRegions();
-    updateEmployeesWindow();
-    updateCompanyWindow();
-    updateRivals();
-    updateRankings();
-    updateDashboardIndicators();
-    drawDashboard();
-
-    el("popFill").style.width = state.popularity+"%";
-    el("popVal").textContent = Math.round(state.popularity);
-    el("entryRateVal").textContent = nFormat(state.lastEntryRate||0, true);
-    el("leaveRateVal").textContent = nFormat(state.lastLeaveRate||0, true);
-    el("retentionVal").textContent = ((1-derived.churnRate)*100).toFixed(2);
-    el("grossVal").textContent = money(state.lastGross||0);
-    el("expVal").textContent = money(state.lastExpenses||0);
-    el("netVal").textContent = money(state.lastNet||0);
-    const margin = (state.lastGross||0)>0 ? ((state.lastNet/state.lastGross)*100).toFixed(1) : "0.0";
-    el("marginVal").textContent = margin;
-  }
-
-  // ================= CLICK =================
-  el("clickBtn").addEventListener("click", function(){
-    const derived = computeDerived();
-    state.money += derived.clickValue;
-    state.totalClicks = (state.totalClicks||0)+1;
-    render();
-  });
 
   // ================= CHAT.exe =================
   function pushRandomChatLine(){
@@ -1582,6 +1234,190 @@ fieldset.win-group:last-child{margin-bottom:0;}
   }
   renderAchievements();
 
+  // ================= MINIGAME: Caça-Bugs =================
+  let miniGame = {active:false, score:0, timeLeft:20, spawnTimer:null, tickTimer:null};
+  function buildBugGrid(){
+    const wrap = el("bugGrid");
+    for(let i=0;i<9;i++){
+      const cell = document.createElement("div");
+      cell.className = "raised bugcell";
+      cell.dataset.index = i;
+      cell.dataset.hot = "0";
+      cell.addEventListener("click", function(){ hitCell(i); });
+      wrap.appendChild(cell);
+    }
+  }
+  function cellEls(){ return el("bugGrid").children; }
+  function spawnBug(){
+    if(!miniGame.active) return;
+    Array.prototype.forEach.call(cellEls(), function(c){ c.textContent=""; c.dataset.hot="0"; });
+    const idx = Math.floor(Math.random()*9);
+    cellEls()[idx].textContent = "🐛";
+    cellEls()[idx].dataset.hot = "1";
+  }
+  function hitCell(i){
+    if(!miniGame.active) return;
+    const cell = cellEls()[i];
+    if(cell.dataset.hot==="1"){
+      miniGame.score += 10;
+      cell.textContent = "💥";
+      cell.dataset.hot = "0";
+      const reward = 5 + Math.floor(state.players*0.001);
+      state.money += reward;
+      el("bugGameScore").textContent = miniGame.score;
+      render();
+    }
+  }
+  function startMiniGame(){
+    if(miniGame.active) return;
+    miniGame.active = true;
+    miniGame.score = 0;
+    miniGame.timeLeft = 20;
+    el("bugGameScore").textContent = "0";
+    el("bugGameStart").disabled = true;
+    state.minigamesPlayed = (state.minigamesPlayed||0)+1;
+    miniGame.spawnTimer = setInterval(spawnBug, 700);
+    miniGame.tickTimer = setInterval(function(){
+      miniGame.timeLeft--;
+      el("bugGameTimer").textContent = miniGame.timeLeft+"s";
+      if(miniGame.timeLeft<=0) endMiniGame();
+    }, 1000);
+    spawnBug();
+    checkAchievements();
+  }
+  function endMiniGame(){
+    miniGame.active = false;
+    clearInterval(miniGame.spawnTimer);
+    clearInterval(miniGame.tickTimer);
+    Array.prototype.forEach.call(cellEls(), function(c){ c.textContent=""; c.dataset.hot="0"; });
+    el("bugGameTimer").textContent = "Fim! Pontuação: "+miniGame.score;
+    el("bugGameStart").disabled = false;
+    state.minigameBestScore = Math.max(state.minigameBestScore||0, miniGame.score);
+    addLog("🎮 Caça-Bugs: rodada terminou com "+miniGame.score+" pontos!", "milestone");
+    render();
+    checkAchievements();
+  }
+  buildBugGrid();
+  el("bugGameStart").addEventListener("click", startMiniGame);
+
+  // ================= RENDER =================
+  function render(){
+    const derived = computeDerived();
+
+    el("moneyVal").textContent = money(state.money);
+    el("playersVal").textContent = players(state.players);
+    el("incomeVal").textContent = money(state.players*derived.revenuePerPlayer + derived.officeIncome)+"/s";
+    el("yearVal").textContent = "Dia "+state.currentDay+"/"+DAYS_PER_YEAR+" · "+state.currentYear;
+
+    el("capLabel").textContent = players(state.players)+" / "+players(derived.capacity);
+    const pct = derived.capacity>0 ? Math.min(100,(state.players/derived.capacity)*100) : 0;
+    el("capFill").style.width = pct+"%";
+
+    allDefs.forEach(function(def){
+      if(state[def.key] >= MAX_LEVEL){
+        def._cntEl.textContent = state[def.key];
+        def._btnEl.textContent = "✅ Nível máximo";
+        def._btnEl.disabled = true;
+        return;
+      }
+      const cost = costFor(def.baseCost, state[def.key], def.rate);
+      def._cntEl.textContent = state[def.key];
+      def._btnEl.textContent = money(cost);
+      def._btnEl.disabled = state.money < cost;
+    });
+
+    const now = Date.now();
+    const cCost = costFor(75, state.marketingUses, 1.10);
+    const remaining = Math.max(0, state.cooldownUntil-now);
+    const cBtn = el("campaignBtn");
+    if(remaining>0){ cBtn.textContent = "⏳ Aguarde "+Math.ceil(remaining/1000)+"s"; cBtn.disabled = true; }
+    else { cBtn.textContent = money(cCost)+" — Lançar campanha"; cBtn.disabled = state.money < cCost; }
+    el("campaignMeta").textContent = "Usos: "+state.marketingUses+" · Impacto: +"+nFormat(derived.campaignBoost,true)+" jogadores · Recarga: "+derived.cooldown.toFixed(1)+"s";
+
+    classDefs.concat(raceDefs).concat(languageDefs).concat(officeUpgradeDefs).forEach(function(def){
+      def._btnEl.textContent = state[def.key] ? "✅ Comprado" : money(def.cost);
+      def._btnEl.disabled = state[def.key] || state.money<def.cost;
+    });
+    (function updateTimedRows(){
+      const now2 = Date.now();
+      expansionDefs.concat(researchDefs).forEach(function(def){
+        if(def.status==="done"){
+          def._btnEl.textContent = "✅ Concluído"; def._btnEl.disabled = true; def._fillEl.style.width = "100%";
+        } else if(def.status==="developing"){
+          const remaining2 = Math.max(0, def.devEndsAt-now2);
+          const pctDone = 100 - (remaining2/(def.time*1000))*100;
+          def._fillEl.style.width = Math.max(0,Math.min(100,pctDone))+"%";
+          def._btnEl.textContent = "⏳ "+Math.ceil(remaining2/1000)+"s restantes";
+          def._btnEl.disabled = true;
+        } else if(def.locked){
+          def._btnEl.textContent = "🔒 Bloqueado"; def._btnEl.disabled = true; def._fillEl.style.width = "0%";
+        } else {
+          def._btnEl.textContent = money(def.cost)+" — Iniciar"; def._btnEl.disabled = state.money<def.cost; def._fillEl.style.width = "0%";
+        }
+      });
+    })();
+    updateBillingRows();
+    updateStreamerRows();
+    updateCompanyWindow();
+    updateRivals();
+    updateRankings();
+    updateDashboardIndicators();
+    drawDashboard();
+
+    el("popFill").style.width = state.popularity+"%";
+    el("popVal").textContent = Math.round(state.popularity);
+    el("entryRateVal").textContent = nFormat(state.lastEntryRate||0, true);
+    el("leaveRateVal").textContent = nFormat(state.lastLeaveRate||0, true);
+    el("retentionVal").textContent = ((1-derived.churnRate)*100).toFixed(2);
+    el("grossVal").textContent = money(state.lastGross||0)+"/s";
+    el("netVal").textContent = money(state.lastNet||0)+"/s";
+  }
+
+  function updateDashboardIndicators(){
+    const derived = computeDerived();
+    el("dashOnline").textContent = players(state.players);
+    el("dashLost").textContent = players(state.cumLost);
+    el("dashNew").textContent = players(state.cumGained);
+    el("dashRevenue").textContent = money(state.lastGross)+"/s";
+    el("dashPopularity").textContent = Math.round(state.popularity)+"/100";
+    el("dashRetention").textContent = ((1-derived.churnRate)*100).toFixed(1)+"%";
+    el("dashServers").textContent = dcTotalCount();
+    el("dashEmployees").textContent = (officeTotalCount()+communityTotalCount());
+    el("dashValue").textContent = money(state.companyValue);
+  }
+  function drawDashboard(){
+    const winEl = el("win-dashboard");
+    const canvas = el("dashCanvas");
+    if(!canvas || !winEl.classList.contains("open")) return;
+    const ctx = canvas.getContext("2d");
+    const w=canvas.width, h=canvas.height;
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,w,h);
+    const dataP = state.history.players, dataM = state.history.money;
+    if(dataP.length<2) return;
+    function drawLine(data,color){
+      const max = Math.max.apply(null, data.concat([1]));
+      const min = Math.min.apply(null, data.concat([0]));
+      const range = (max-min)||1;
+      ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.beginPath();
+      data.forEach(function(v,i){
+        const x = (i/(data.length-1))*w;
+        const y = h - ((v-min)/range)*h;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+    }
+    drawLine(dataP, "#3ddc97");
+    drawLine(dataM, "#e0b84c");
+  }
+
+  // ================= CLICK =================
+  el("clickBtn").addEventListener("click", function(){
+    const derived = computeDerived();
+    state.money += derived.clickValue;
+    state.totalClicks = (state.totalClicks||0)+1;
+    render();
+  });
+
   // ================= GAME LOOP =================
   function tick(){
     const derived = computeDerived();
@@ -1605,28 +1441,16 @@ fieldset.win-group:last-child{margin-bottom:0;}
     const gross = state.players*derived.revenuePerPlayer + derived.officeIncome;
     state.money += gross;
     state.lastGross = gross; state.lastExpenses = 0; state.lastNet = gross;
-    const netP = gross;
     state.yearRevenueAccum = (state.yearRevenueAccum||0) + gross;
-    state.yearProfitAccum = (state.yearProfitAccum||0) + netP;
-    state.companyValue = state.money + state.players*80 + state.yearRevenueAccum*4 + state.sequelCount*300000 + expansionDefs.filter(function(d){return d.status==="done";}).length*150000 + state.popularity*2000;
+    state.yearProfitAccum = (state.yearProfitAccum||0) + gross;
+    state.companyValue = state.money + state.players*80 + state.yearRevenueAccum*4 + expansionDefs.filter(function(d){return d.status==="done";}).length*150000 + state.popularity*2000;
 
     const tierPopEffect = [0.03, 0, -0.02, -0.05][state.billingTier];
-    let popDelta = derived.contentPopularityTotal*0.01 + derived.communityPopularityRegen + derived.classesPopularity*0.003 - 0.04 + tierPopEffect;
+    let popDelta = derived.contentPopularityTotal*0.01 + derived.communityPopularityRegen + derived.classesPopularity*0.003 + derived.officePopRegenBonus - 0.04 + tierPopEffect;
     if(state.incident && state.incident.active && state.incident.popularityPenalty) popDelta -= state.incident.popularityPenalty;
     if(derived.capacity>0 && state.players >= derived.capacity*0.95) popDelta -= 0.15;
     state.popularity = Math.max(0, Math.min(100, state.popularity+popDelta));
 
-    state.teamFatigue = Math.max(0, Math.min(100, state.teamFatigue + 0.06 - derived.officeFatigueReduction));
-    state.teamMotivation = Math.max(0, Math.min(100, state.teamMotivation + (derived.officeHappinessBonus*0.01) - (state.teamFatigue>70?0.08:0) + 0.01));
-    state.teamExperience = Math.min(100, state.teamExperience + 0.006);
-
-    if(state.strikeActive && Date.now()>=state.strikeEndsAt){
-      state.strikeActive = false;
-      state.strikesResolved = (state.strikesResolved||0)+1;
-      addLog("Greve terminou naturalmente.", "office");
-    }
-
-    checkAchievements();
     if(state.players > (state.allTimeHigh||0)) state.allTimeHigh = state.players;
     if(state.allTimeHigh > (state.lastRecordLogged||0)*1.1 && state.allTimeHigh>=20){
       addLog("🎉 Novo recorde de jogadores online: "+players(state.allTimeHigh)+"!", "milestone");
@@ -1640,6 +1464,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     checkMilestones();
     checkTimedCompletions();
     checkEventExpiry();
+    checkAchievements();
     render();
   }
   function checkTimedCompletions(){
@@ -1649,6 +1474,64 @@ fieldset.win-group:last-child{margin-bottom:0;}
     });
   }
   setInterval(function(){ if(state.paused) return; for(let i=0;i<state.speed;i++){ tick(); } }, 1000);
+
+  // ================= MÚSICA DE FUNDO (chiptune procedural) =================
+  let audioCtx = null, musicGain = null, musicEnabled = false, musicTimerId = null;
+  let nextNoteTime = 0, currentStep = 0;
+  const melodyNotes = ["E5","G5","E5","C5","D5","E5","D5","B4","C5","E5","C5","G4","A4","C5","B4","G4"];
+  const bassNotes   = ["C3","C3","G3","G3","A3","A3","G3","G3","F3","F3","C3","C3","G3","G3","C3","C3"];
+  const stepDur = 0.22;
+  function noteToFreq(note){
+    const semis = {C:-9,"C#":-8,D:-7,"D#":-6,E:-5,F:-4,"F#":-3,G:-2,"G#":-1,A:0,"A#":1,B:2};
+    const m = note.match(/^([A-G]#?)(\d)$/);
+    const semitones = semis[m[1]] + (parseInt(m[2],10)-4)*12;
+    return 440 * Math.pow(2, semitones/12);
+  }
+  function playNote(freq, time, duration, type, vol){
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, time);
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(vol, time+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, time+duration);
+    osc.connect(gain);
+    gain.connect(musicGain);
+    osc.start(time);
+    osc.stop(time+duration+0.02);
+  }
+  function musicScheduler(){
+    if(!musicEnabled || !audioCtx) return;
+    while(nextNoteTime < audioCtx.currentTime + 0.15){
+      playNote(noteToFreq(melodyNotes[currentStep % melodyNotes.length]), nextNoteTime, stepDur*0.9, "square", 0.05);
+      playNote(noteToFreq(bassNotes[currentStep % bassNotes.length]), nextNoteTime, stepDur*0.9, "triangle", 0.06);
+      nextNoteTime += stepDur;
+      currentStep++;
+    }
+    musicTimerId = setTimeout(musicScheduler, 50);
+  }
+  function startMusic(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      musicGain = audioCtx.createGain();
+      musicGain.gain.value = 0.22;
+      musicGain.connect(audioCtx.destination);
+    }
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    musicEnabled = true;
+    nextNoteTime = audioCtx.currentTime + 0.1;
+    currentStep = 0;
+    el("musicBtn").textContent = "🔊";
+    musicScheduler();
+  }
+  function stopMusic(){
+    musicEnabled = false;
+    if(musicTimerId) clearTimeout(musicTimerId);
+    el("musicBtn").textContent = "🔇";
+  }
+  el("musicBtn").addEventListener("click", function(){
+    if(musicEnabled) stopMusic(); else startMusic();
+  });
 
   // ================= PAUSE / SPEED CONTROLS =================
   el("pauseBtn").addEventListener("click", function(){
@@ -1669,39 +1552,60 @@ fieldset.win-group:last-child{margin-bottom:0;}
   updateClock();
   setInterval(updateClock, 10000);
 
-  // ================= WINDOW MANAGER =================
+  // ================= WINDOW MANAGER (taskbar shows only open windows) =================
   const windowsMeta = [
     {id:"win-prog",       icon:"💻", label:"Programação",  defaultOpen:true},
-    {id:"win-game",       icon:"🎮", label:"Jogo",          defaultOpen:false},
     {id:"win-dc",         icon:"🌐", label:"DataCenter",    defaultOpen:false},
     {id:"win-mkt",        icon:"📣", label:"Marketing",     defaultOpen:false},
-    {id:"win-seq",        icon:"🚀", label:"Sequências",    defaultOpen:false},
     {id:"win-analytics",  icon:"📊", label:"Analytics",     defaultOpen:true},
     {id:"win-billing",    icon:"💳", label:"Billing",       defaultOpen:false},
     {id:"win-expansions", icon:"📦", label:"Expansões",     defaultOpen:false},
     {id:"win-content",    icon:"📜", label:"Conteúdo",      defaultOpen:false},
-    {id:"win-classes",    icon:"⚔️", label:"Classes",       defaultOpen:false},
     {id:"win-community",  icon:"👥", label:"Community",     defaultOpen:false},
     {id:"win-streamers",  icon:"📺", label:"Streamers",     defaultOpen:false},
     {id:"win-research",   icon:"🔬", label:"Research",      defaultOpen:false},
-    {id:"win-reviews",    icon:"📰", label:"Reviews",       defaultOpen:false},
-    {id:"win-chat",       icon:"💬", label:"Chat",          defaultOpen:false},
-    {id:"win-achievements",icon:"🏅", label:"Conquistas",   defaultOpen:false},
     {id:"win-office",     icon:"🏢", label:"Escritório",    defaultOpen:false},
-    {id:"win-employees",  icon:"👨‍💻", label:"Funcionários",  defaultOpen:false},
-    {id:"win-world",      icon:"🌍", label:"Mundo",         defaultOpen:false},
     {id:"win-awards",     icon:"🏆", label:"Premiações",    defaultOpen:false},
     {id:"win-company",    icon:"📈", label:"Empresa",       defaultOpen:false},
-    {id:"win-events",     icon:"🎮", label:"Eventos",       defaultOpen:false},
+    {id:"win-events",     icon:"📻", label:"Notícias",      defaultOpen:false},
     {id:"win-internet",   icon:"🌐", label:"Internet",      defaultOpen:false},
     {id:"win-competitors",icon:"⚔️", label:"Concorrentes",  defaultOpen:false},
     {id:"win-dashboard",  icon:"📊", label:"Dashboard",     defaultOpen:false},
+    {id:"win-chat",       icon:"💬", label:"Chat",          defaultOpen:false},
+    {id:"win-achievements",icon:"🏅", label:"Conquistas",   defaultOpen:false},
+    {id:"win-minigame",   icon:"🎮", label:"Minigames",     defaultOpen:false},
     {id:"win-log",        icon:"📋", label:"Patch Notes",   defaultOpen:true},
   ];
   let zTop = 100;
   function bringToFront(id){ zTop++; el(id).style.zIndex = zTop; }
-  function openWindow(id){ el(id).classList.add("open"); const t=el("task_"+id); if(t) t.classList.add("active"); bringToFront(id); render(); }
-  function closeWindow(id){ el(id).classList.remove("open"); const t=el("task_"+id); if(t) t.classList.remove("active"); }
+  function findMeta(id){ return windowsMeta.find(function(w){ return w.id===id; }); }
+  function ensureTaskbarButton(id){
+    let btn = el("task_"+id);
+    if(btn) return btn;
+    const w = findMeta(id);
+    if(!w) return null;
+    btn = document.createElement("div");
+    btn.className = "taskApp raised show";
+    btn.id = "task_"+id;
+    btn.innerHTML = "<span>"+w.icon+"</span><span>"+w.label+"</span>";
+    btn.addEventListener("click", function(){ toggleWindow(id); });
+    const incidentBtn = el("task_win-incident");
+    el("taskAppsWrap").insertBefore(btn, incidentBtn);
+    return btn;
+  }
+  function removeTaskbarButton(id){ const btn = el("task_"+id); if(btn) btn.remove(); }
+  function openWindow(id){
+    el(id).classList.add("open");
+    const btn = ensureTaskbarButton(id);
+    if(btn) btn.classList.add("active");
+    bringToFront(id);
+    render();
+  }
+  function closeWindow(id){
+    el(id).classList.remove("open");
+    if(findMeta(id)) removeTaskbarButton(id);
+    else { const t=el("task_"+id); if(t) t.classList.remove("active"); }
+  }
   function toggleWindow(id){ el(id).classList.contains("open") ? closeWindow(id) : openWindow(id); }
 
   function positionWindows(){
@@ -1712,20 +1616,6 @@ fieldset.win-group:last-child{margin-bottom:0;}
     });
   }
   positionWindows();
-
-  function buildTaskbarApps(){
-    const wrap = el("taskAppsWrap");
-    const incidentBtn = el("task_win-incident");
-    windowsMeta.forEach(function(w){
-      const btn = document.createElement("div");
-      btn.className = "taskApp raised show";
-      btn.id = "task_"+w.id;
-      btn.innerHTML = "<span>"+w.icon+"</span><span>"+w.label+"</span>";
-      btn.addEventListener("click", function(){ toggleWindow(w.id); });
-      wrap.insertBefore(btn, incidentBtn);
-    });
-  }
-  buildTaskbarApps();
 
   document.querySelectorAll("[data-close]").forEach(function(btn){
     btn.addEventListener("click", function(e){ e.stopPropagation(); closeWindow(btn.getAttribute("data-close")); });
@@ -1770,10 +1660,9 @@ fieldset.win-group:last-child{margin-bottom:0;}
     wpList.appendChild(item);
   });
 
-  const newWindowIds = ["win-analytics","win-billing","win-expansions","win-content","win-classes","win-community","win-streamers","win-research","win-reviews","win-office","win-employees","win-world","win-awards","win-company","win-events","win-internet","win-competitors","win-dashboard","win-chat","win-achievements"];
   function buildStartShortcuts(){
     const wrap = el("startShortcuts");
-    windowsMeta.filter(function(w){ return newWindowIds.indexOf(w.id)!==-1; }).forEach(function(w){
+    windowsMeta.forEach(function(w){
       const item = document.createElement("div");
       item.className = "wallpaper-item";
       item.innerHTML = "<span>"+w.icon+"</span><span>"+w.label+"</span>";
@@ -1798,10 +1687,11 @@ fieldset.win-group:last-child{margin-bottom:0;}
     el("statusBar").classList.add("show");
     windowsMeta.forEach(function(w){ if(w.defaultOpen) openWindow(w.id); });
     addLog("🎮 "+g+" entra em desenvolvimento na "+c+"! Estamos em "+state.currentYear+".", "milestone");
-    addLog("Use Programação, Jogo, DataCenter e Escritório para crescer a base técnica.");
-    addLog("Conteúdo, Classes, Community e Funcionários mantêm popularidade e retenção em dia.");
-    addLog("Mundo.exe lança o jogo em novas regiões. Billing define seu modelo de assinatura.");
-    addLog("Fique de olho em Eventos.exe e Concorrentes.exe — e corrija incidentes rápido!");
+    addLog("Use Programação, DataCenter e Escritório para crescer a base técnica.");
+    addLog("Conteúdo reúne upgrades, classes, raças e idiomas. Community cuida da retenção.");
+    addLog("Billing define seu modelo de assinatura — cuidado, mexe na popularidade!");
+    addLog("Fique de olho em Notícias.exe e Concorrentes.exe — e corrija incidentes rápido!");
+    addLog("Dá uma passada no Minigames.exe pra ganhar uma graninha extra jogando.");
     scheduleNextIncident();
     scheduleNextSeasonalEvent();
     scheduleNextCompetitor();
@@ -1809,6 +1699,7 @@ fieldset.win-group:last-child{margin-bottom:0;}
     scheduleNextWorldEvent();
     scheduleForumRefresh();
     scheduleNextChatLine();
+    startMusic();
     render();
   });
   [el("companyInput"), el("gameInput")].forEach(function(inp){
